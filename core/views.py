@@ -1,4 +1,4 @@
 from django.shortcuts import render
 
 def core(request):
-    return render(request, 'core/templete.html')
+    return render(request, 'core/sito-in-sviluppo.html')

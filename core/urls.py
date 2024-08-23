@@ -1,11 +1,6 @@
-from django.urls import include, path
-from django.contrib import admin
-from . import views 
-
-app_name = 'core'
+from django.urls import  path
+from . import views
 
 urlpatterns = [
-    path('core/', views.core ),
-    path('admin/', admin.site.urls),
-
+    path(' ', views.core),
 ]
