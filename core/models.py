@@ -1,6 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class Core(models.Model):
+    campo1 = models.CharField(max_length=100)
+    campo2 = models.TextField()
+
+    def __str__(self):
+        return self.campo1
+
 class Camera(models.Model):
     nome = models.CharField(max_length=50)
     numero_posti_letto = models.IntegerField()

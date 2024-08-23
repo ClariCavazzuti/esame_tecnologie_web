@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from .models import core
+from .models import Core
+
 def core(request):
-    dati=core.objects.all()
+    dati=Core.objects.all()
     return render(request, 'core/sito-in-sviluppo.html',{'dato':dati}) 
 
