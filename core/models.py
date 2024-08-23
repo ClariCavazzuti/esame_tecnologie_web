@@ -1,36 +1,56 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class Camera(models.Model):
+    nome = models.CharField(max_length=50)
+    numero_posti_letto = models.IntegerField()
+    disponibile = models.BooleanField(default=True)
+    prezzo_per_notte = models.DecimalField(max_digits=6, decimal_places=2)
+    descrizione = models.TextField(blank=True, null=True)
+    immagini = models.ImageField(upload_to='camere/', blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.nome} - {self.numero_posti_letto} posti letto"
+
+class PrenotazioneCamera(models.Model):
+    utente = models.ForeignKey(User, on_delete=models.CASCADE)
+    camera = models.ForeignKey(Camera, on_delete=models.CASCADE)
+    data_inizio = models.DateField()
+    data_fine = models.DateField()
+
+    def __str__(self):
+        return f"Prenotazione per {self.utente} - Camera: {self.camera}"
+
+class Tavolo(models.Model):
+    numero = models.IntegerField()
+    posti = models.IntegerField()
+    disponibile = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Tavolo {self.numero} - {self.posti} posti"
+
+class PrenotazioneTavolo(models.Model):
+    utente = models.ForeignKey(User, on_delete=models.CASCADE)
+    tavolo = models.ForeignKey(Tavolo, on_delete=models.CASCADE)
+    data_prenotazione = models.DateTimeField()
+
+    def __str__(self):
+        return f"Prenotazione Tavolo {self.tavolo.numero} per {self.utente}"
+
 class MenuItem(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=6, decimal_places=2)
-    image = models.ImageField(upload_to='menu_images/', blank=True, null=True)
+    nome = models.CharField(max_length=100)
+    descrizione = models.TextField()
+    prezzo = models.DecimalField(max_digits=5, decimal_places=2)
 
-class Room(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField()
-    price_per_night = models.DecimalField(max_digits=6, decimal_places=2)
-    capacity = models.IntegerField()
-    available = models.BooleanField(default=True)
-    image = models.ImageField(upload_to='room_images/', blank=True, null=True)
+    def __str__(self):
+        return self.nome
 
-class Reservation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    check_in = models.DateField()
-    check_out = models.DateField()
-    guests = models.IntegerField()
+class Recensione(models.Model):
+    utente = models.ForeignKey(User, on_delete=models.CASCADE)
+    testo = models.TextField()
+    valutazione = models.IntegerField()
+    immagini = models.ImageField(upload_to='recensioni/', blank=True, null=True)
+    data = models.DateTimeField(auto_now_add=True)
 
-class TableBooking(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField()
-    guests = models.IntegerField()
-
-class Review(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
-    rating = models.IntegerField()
-    comment = models.TextField()
-    image = models.ImageField(upload_to='review_images/', blank=True, null=True)
-
+    def __str__(self):
+        return f"Recensione di {self.utente} - {self.valutazione} stelle"
