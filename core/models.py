@@ -5,7 +5,7 @@ class Camera(models.Model):
     nome = models.CharField(max_length=50)
     numero_posti_letto = models.IntegerField()
     disponibile = models.BooleanField(default=True)
-    prezzo_per_notte = models.DecimalField(max_digits=6, decimal_places=2)
+    prezzo_per_notte = models.FloatField()
     descrizione = models.TextField(blank=True, null=True)
     immagini = models.ImageField(upload_to='camere/', blank=True, null=True)
 
@@ -41,6 +41,7 @@ class MenuItem(models.Model):
     nome = models.CharField(max_length=100)
     descrizione = models.TextField()
     prezzo = models.DecimalField(max_digits=5, decimal_places=2)
+    immagine = models.ImageField(upload_to='menu/', blank=True, null=True)
 
     def __str__(self):
         return self.nome
