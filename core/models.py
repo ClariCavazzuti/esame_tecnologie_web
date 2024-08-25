@@ -14,7 +14,9 @@ class Camera(models.Model):
     disponibile = models.BooleanField(default=True)
     prezzo_per_notte = models.FloatField()
     descrizione = models.TextField(blank=True, null=True)
-    immagini = models.ImageField(upload_to='camere/', blank=True, null=True)
+    immagini1 = models.ImageField(upload_to='camere/', blank=True, null=True)
+    immagini2 = models.ImageField(upload_to='camere/', blank=True, null=True)
+    immagini3 = models.ImageField(upload_to='camere/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.nome} - {self.numero_posti_letto} posti letto"
