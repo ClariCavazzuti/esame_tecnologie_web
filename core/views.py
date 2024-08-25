@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from .models import Core
+from .models import MenuItem
 
 def core(request):
-    dati=Core.objects.all()
-    return render(request, 'core/sito-in-sviluppo.html',{'dato':dati}) 
+    dati=MenuItem.objects.all()
+    return render(request, 'core/pagina-menu.html',{'dati':dati}) 
 
