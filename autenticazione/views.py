@@ -4,6 +4,12 @@ from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegisterForm
 
+def autenticazione(request):
+    return render(request, "autenticazione/benvenuto.html")
+
+
+
+
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -14,7 +20,7 @@ def register(request):
             return redirect('login')
     else:
         form = UserRegisterForm()
-    return render(request, 'accounts/register.html', {'form': form})
+    return render(request, 'autenticazione/register.html', {'form': form})
 
 def user_login(request):
     if request.method == 'POST':
@@ -31,7 +37,7 @@ def user_login(request):
         else:
             messages.error(request, "Invalid username or password.")
     form = AuthenticationForm()
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'autenticazione/login.html', {'form': form})
 
 def user_logout(request):
     logout(request)
