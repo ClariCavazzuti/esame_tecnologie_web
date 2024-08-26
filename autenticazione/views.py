@@ -5,9 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegisterForm
 
 def autenticazione(request):
-    return render(request, "autenticazione/benvenuto.html")
-
-
+    return render(request,'autenticazione/benvenuto.html')
 
 
 def register(request):
