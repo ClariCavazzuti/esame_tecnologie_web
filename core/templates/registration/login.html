@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+  </head>
+  <body>
+    <h1>Login</h1>
+    
+    {% load crispy_forms_tags %}
+    {% block content %}
+    <form method="post">  {% csrf_token %}
+        {{form | crispy}}
+    
+        <input type="submit" class="btn btn-success" value="Login">
+    
+    </form>
+    
+     {% endblock %} 
+  </body>
+</html>
+
