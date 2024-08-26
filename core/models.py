@@ -47,9 +47,21 @@ class PrenotazioneTavolo(models.Model):
         return f"Prenotazione Tavolo {self.tavolo.numero} per {self.utente}"
 
 class MenuItem(models.Model):
+
+    CATEGORIE = [
+        ('antipasti', 'Antipasti'),
+        ('primi', 'Primi'),
+        ('secondi', 'Secondi'),
+        ('contorni', 'Contorni'),
+        ('dolci', 'Dolci'),
+        ('bevande', 'Bevande'),
+    ]
+
+
     nome = models.CharField(max_length=100)
     descrizione = models.TextField()
     prezzo = models.DecimalField(max_digits=5, decimal_places=2)
+    categoria = models.CharField(max_length=20, choices=CATEGORIE)
     immagine = models.ImageField(upload_to='menu/', blank=True, null=True)
 
     def __str__(self):

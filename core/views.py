@@ -5,8 +5,15 @@ def core(request):
     return render(request, 'core/sito-in-sviluppo.html') 
 
 def menu(request):
-    dati=MenuItem.objects.all()
-    return render(request, 'core/pagina-menu.html', {'dati': dati} )
+    menu_items = {
+        'antipasti': MenuItem.objects.filter(categoria='antipasti'),
+        'primi': MenuItem.objects.filter(categoria='primi'),
+        'secondi': MenuItem.objects.filter(categoria='secondi'),
+        'contorni': MenuItem.objects.filter(categoria='contorni'),
+        'dolci': MenuItem.objects.filter(categoria='dolci'),
+        'bevande': MenuItem.objects.filter(categoria='bevande'),
+    }
+    return render(request, 'core/pagina-menu.html', {'menu_items': menu_items} )
 
 def camere(request):
     camere=Camera.objects.all()
