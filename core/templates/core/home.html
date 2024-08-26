@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kristall Ristorante e Albergo</title>
+    <!-- Link Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .hero-section {
+            background-image: url('{% static "core/home.png" %}');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 100px 0;
+        }
+        .navbar .btn-login, .navbar .btn-logout {
+            color: white;
+            background-color: #000; /* Nero */
+            border: none;
+            padding: 5px 15px;
+            border-radius: 3px;
+            text-align: center;
+            margin-right: 10px; /* Spazio tra i pulsanti */
+        }
+        .navbar .btn-login:hover, .navbar .btn-logout:hover {
+            background-color: #333; /* Colore nero più chiaro al passaggio del mouse */
+        }
+        .navbar .btn-register {
+            color: white;
+            background-color: #6c757d; /* Grigio Bootstrap */
+            border: none;
+            padding: 5px 15px;
+            border-radius: 3px;
+            text-align: center;
+        }
+        .navbar .btn-register:hover {
+            background-color: #5a6268; /* Grigio più scuro al passaggio del mouse */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Kristall</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'menu' %}">Menu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'camere' %}">Prenota Una Camera</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Prenota Un Tavolo</a>
+                </li>
+            </ul>
+            {% if user.is_authenticated %}
+                <!-- Pulsante di Logout -->
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                     {% csrf_token %}
+                    <button type="submit" class="btn btn-logout">Logout</button>
+                </form>
+
+            {% else %}
+                <!-- Pulsanti di Login e Registrati -->
+                <a href="{% url 'login' %}" class="btn btn-login">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-register">Registrati</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1>Benvenuti al Ristorante e Albergo Kristall</h1>
+            <p>La vostra oasi di gusto e relax nel cuore della città.</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <h2>Il nostro ristorante</h2>
+        <p>Il Ristorante Kristall offre una vasta gamma di piatti raffinati preparati con ingredienti freschi e locali. Scopri il nostro menu e lasciati tentare dalle nostre specialità culinarie.</p>
+
+        <h2>Il nostro albergo</h2>
+        <p>Il nostro albergo offre camere confortevoli e ben arredate per un soggiorno rilassante. Prenota una camera e goditi un'esperienza di comfort e ospitalità senza pari.</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center py-3">
+        <p>&copy; 2024 Kristall Ristorante e Albergo. Tutti i diritti riservati.</p>
+    </footer>
+
+    <!-- Link Bootstrap JS e dipendenze -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

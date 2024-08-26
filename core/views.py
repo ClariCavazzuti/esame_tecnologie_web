@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import MenuItem, Camera
 
 def core(request):
-    return render(request, 'core/sito-in-sviluppo.html') 
+    return render(request, 'core/home.html') 
 
 def menu(request):
     menu_items = {
