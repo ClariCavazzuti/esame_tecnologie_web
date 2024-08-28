@@ -1,71 +1,34 @@
 from django.contrib import admin
 from .models import Camera, RoomBooking, MenuItem, Recensione, Tavolo, Core
 from datetime import datetime, timedelta
+from django.db.models import Count  # Import corretto
 
 class CameraAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'tipo', 'camere_totali', 'camere_prenotate_settimana')
+    list_display = ('nome', 'tipo', 'camere_totali', 'riepilogo_prenotazioni')
     list_filter = ('tipo',)
     search_fields = ('nome', 'tipo', 'descrizione')
 
-    def camere_prenotate_settimana(self, obj):
+    def riepilogo_prenotazioni(self, obj):
         """
-        Calcola e mostra quante camere di questo tipo sono prenotate nella settimana corrente.
+        Mostra un riepilogo di tutte le camere prenotate (per tipo) e il periodo di tempo per cui sono prenotate.
         """
-        oggi = datetime.today()
-        inizio_settimana = oggi - timedelta(days=oggi.weekday())
-        fine_settimana = inizio_settimana + timedelta(days=6)
+        prenotazioni = RoomBooking.objects.filter(camera=obj).values('start_date', 'end_date')
+        riepilogo = []
+        for prenotazione in prenotazioni:
+            riepilogo.append(f"{prenotazione['start_date']} - {prenotazione['end_date']}")
 
-        # Filtra le prenotazioni che iniziano o finiscono in questa settimana
-        prenotazioni = RoomBooking.objects.filter(
-            camera=obj,
-            start_date__lte=fine_settimana,
-            end_date__gte=inizio_settimana
-        )
-        
-        return prenotazioni.count()
-    
-    camere_prenotate_settimana.short_description = 'Camere prenotate (questa settimana)'
+        return ", ".join(riepilogo) if riepilogo else "Nessuna prenotazione"
 
-    def show_bookings_for_week(self, request, queryset):
-        """
-        Azione personalizzata per mostrare le prenotazioni per una settimana selezionata.
-        """
-        settimana = request.GET.get('settimana')
-        if settimana:
-            try:
-                inizio_settimana = datetime.strptime(settimana + '-1', "%Y-W%W-%w")
-                fine_settimana = inizio_settimana + timedelta(days=6)
-            except ValueError:
-                self.message_user(request, "Formato data non valido", level='error')
-                return
-
-            # Calcola le prenotazioni per ogni camera selezionata
-            risultato = []
-            for camera in queryset:
-                prenotazioni = RoomBooking.objects.filter(
-                    camera=camera,
-                    start_date__lte=fine_settimana,
-                    end_date__gte=inizio_settimana
-                ).count()
-                risultato.append(f"{camera.nome} ({camera.tipo}): {prenotazioni} prenotazioni")
-
-            self.message_user(request, "\n".join(risultato))
-
-        else:
-            self.message_user(request, "Seleziona una settimana per vedere le prenotazioni", level='error')
-
-    show_bookings_for_week.short_description = 'Mostra prenotazioni per settimana selezionata'
+    riepilogo_prenotazioni.short_description = 'Riepilogo prenotazioni'
 
     def get_queryset(self, request):
         """
-        Modifica la query per aggiungere il conteggio delle camere prenotate.
+        Modifica la query per aggiungere eventuali annotazioni o filtraggio necessario.
         """
         qs = super().get_queryset(request)
-        # Esegue una annotazione delle prenotazioni per ogni camera
         return qs
 
 admin.site.register(Camera, CameraAdmin)
-
 
 @admin.register(RoomBooking)
 class RoomBookingAdmin(admin.ModelAdmin):

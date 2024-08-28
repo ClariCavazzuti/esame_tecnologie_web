@@ -34,12 +34,12 @@
             $("input[name='camere']:checked").each(function() {
                 camereSelezionate.push($(this).val());
             });
-
+    
             if (camereSelezionate.length === 0) {
                 alert("Seleziona almeno una camera per effettuare la prenotazione.");
                 return;
             }
-
+    
             var conferma = confirm("Confermi la prenotazione delle camere selezionate?");
             if (conferma) {
                 // Invia la richiesta AJAX
