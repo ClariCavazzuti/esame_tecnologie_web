@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Camera, RoomBooking, MenuItem, Recensione, Tavolo, Core
+from .models import Camera, RoomBooking, MenuItem, Recensione, Tavolo, Core, TavoloBooking
 from datetime import datetime, timedelta
 from django.db.models import Count  # Import corretto
 
@@ -54,7 +54,15 @@ class TavoloAdmin(admin.ModelAdmin):
     list_filter = ('posti', 'disponibile')
     search_fields = ('numero',)
 
+@admin.register(TavoloBooking)
+class TavoloBookingAdmin(admin.ModelAdmin):
+    list_display = ('user', 'tavolo', 'data', 'orario_arrivo', 'tipo_pasto', 'numero_telefono', 'note')
+    list_filter = ('data', 'tipo_pasto')
+    search_fields = ('user__username', 'tavolo__numero', 'note')
+
 @admin.register(Core)
 class CoreAdmin(admin.ModelAdmin):
     list_display = ('campo1', 'campo2')
     search_fields = ('campo1', 'campo2')
+
+

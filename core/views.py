@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import MenuItem, Camera, RoomBooking
-from .forms import RoomSearchForm, RoomBookingForm
+from .models import MenuItem, Camera, RoomBooking, TavoloBooking
+from .forms import RoomSearchForm, RoomBookingForm, TavoloBookingForm
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from datetime import date
@@ -133,3 +133,17 @@ def cancella_prenotazione(request, prenotazione_id):
     prenotazione.delete()
     messages.success(request, 'Prenotazione cancellata con successo.')
     return redirect('core_home')
+
+@login_required
+def prenotazione_tavolo(request):
+    if request.method == 'POST':
+        form = TavoloBookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.user = request.user
+            booking.save()
+            messages.success(request, 'Prenotazione effettuata con successo!')
+            return redirect('core_home')
+    else:
+        form = TavoloBookingForm()
+    return render(request, 'core/prenotazione_tavolo.html', {'form': form})

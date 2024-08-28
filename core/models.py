@@ -54,7 +54,7 @@ class Camera(models.Model):
 
 
 class Tavolo(models.Model):
-    numero = models.IntegerField()
+    numero = models.IntegerField(unique=True)
     posti = models.IntegerField()
     disponibile = models.BooleanField(default=True)
 
@@ -64,6 +64,27 @@ class Tavolo(models.Model):
     class Meta:
         verbose_name = "Tavolo"
         verbose_name_plural = "Tavoli"
+
+class TavoloBooking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    tavolo = models.ForeignKey(Tavolo, on_delete=models.CASCADE)
+    data = models.DateField()
+    orario_arrivo = models.TimeField()
+    pasti = [
+        ('pranzo', 'Pranzo'),
+        ('cena', 'Cena'),
+    ]
+    tipo_pasto = models.CharField(choices=pasti, max_length=15)
+    numero_persone = models.IntegerField()
+    numero_telefono = models.CharField(max_length=15)
+    note = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.tavolo} - {self.data} - {self.tipo_pasto}"
+    
+    class Meta:
+        verbose_name = "Prenotazione Tavolo"
+        verbose_name_plural = "Prenotazioni Tavoli"
 
 class MenuItem(models.Model):
     CATEGORIE = [
@@ -102,6 +123,8 @@ class RoomBooking(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
+    numero_telefono = models.CharField(max_length=15)
+    note = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Prenotazione di {self.utente.username} per {self.camera.get_tipo_display()}"

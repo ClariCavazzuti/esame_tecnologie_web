@@ -1,5 +1,5 @@
 from django import forms
-from .models import RoomBooking
+from .models import RoomBooking, TavoloBooking
 
 class RoomSearchForm(forms.Form):
     """
@@ -12,7 +12,11 @@ class RoomSearchForm(forms.Form):
 class RoomBookingForm(forms.ModelForm):
     class Meta:
         model = RoomBooking
-        fields = ['start_date', 'end_date']
+        fields = ['camera', 'start_date', 'end_date', 'numero_telefono', 'note']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+        }
 
     def clean(self):
         """
@@ -27,3 +31,12 @@ class RoomBookingForm(forms.ModelForm):
                 raise forms.ValidationError("La data di fine deve essere successiva alla data di inizio.")
 
         return cleaned_data
+
+class TavoloBookingForm(forms.ModelForm):
+    class Meta:
+        model = TavoloBooking
+        fields = ['tavolo', 'data', 'orario_arrivo', 'tipo_pasto', 'numero_persone', 'numero_telefono', 'note']
+        widgets = {
+            'orario_arrivo': forms.TimeInput(format='%H:%M'),
+            'data': forms.DateInput(attrs={'type': 'date'}),
+        }

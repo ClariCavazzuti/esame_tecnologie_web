@@ -10,4 +10,5 @@ urlpatterns = [
     path('ajax/book_room/', views.ajax_book_room, name='ajax_book_room'),
     path('ajax/book_rooms/', views.ajax_book_rooms, name='ajax_book_rooms'),
     path('cancella_prenotazione/<int:prenotazione_id>/', views.cancella_prenotazione, name='cancella_prenotazione'),
+    path('prenotazione_tavolo/', views.prenotazione_tavolo, name='prenotazione_tavolo'),
 ]
