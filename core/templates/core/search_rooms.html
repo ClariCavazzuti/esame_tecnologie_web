@@ -1,0 +1,35 @@
+<!-- templates/core/search_rooms.html -->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Ricerca Camere</title>
+</head>
+<body>
+    <h1>Ricerca Camere Disponibili</h1>
+    <form method="GET" action="{% url 'search_rooms' %}">
+        {% csrf_token %}
+        <label for="check_in_date">Data di inizio:</label>
+        <input type="date" name="check_in_date" id="check_in_date" required>
+        <br><br>
+        <label for="check_out_date">Data di fine:</label>
+        <input type="date" name="check_out_date" id="check_out_date" required>
+        <br><br>
+        <label for="posti_letto">Numero di posti letto:</label>
+        <input type="number" name="posti_letto" id="posti_letto" min="1" required>
+        <br><br>
+        <button type="submit">Cerca</button>
+    </form>
+
+    {% if form.errors %}
+        <div class="errors">
+            <p>Si sono verificati errori nel modulo:</p>
+            <ul>
+                {% for field, errors in form.errors.items %}
+                    <li>{{ field }}: {{ errors|join:", " }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</body>
+</html>

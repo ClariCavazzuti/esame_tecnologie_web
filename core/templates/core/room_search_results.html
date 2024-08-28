@@ -1,0 +1,40 @@
+<!-- templates/core/room_search_results.html -->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Risultati della Ricerca Camere</title>
+</head>
+<body>
+    <h1>Risultati della Ricerca Camere</h1>
+
+    {% if available_rooms %}
+        <ul>
+            {% for camera in available_rooms %}
+                <li>
+                    <h2>{{ camera.nome }} - {{ camera.get_tipo_display }}</h2>
+                    <p>Posti letto: {{ camera.numero_posti_letto }}</p>
+                    <p>Prezzo per notte: €{{ camera.prezzo_per_notte }}</p>
+                    <p>{{ camera.descrizione }}</p>
+                    <div>
+                        {% if camera.immagine1 %}
+                            <img src="{{ camera.immagine1.url }}" alt="Immagine Camera 1" style="max-width: 200px;">
+                        {% endif %}
+                        {% if camera.immagine2 %}
+                            <img src="{{ camera.immagine2.url }}" alt="Immagine Camera 2" style="max-width: 200px;">
+                        {% endif %}
+                        {% if camera.immagine3 %}
+                            <img src="{{ camera.immagine3.url }}" alt="Immagine Camera 3" style="max-width: 200px;">
+                        {% endif %}
+                    </div>
+                    <p><a href="{% url 'book_room' camera.id %}">Prenota questa camera</a></p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nessuna camera disponibile per le date e il numero di posti letto selezionati.</p>
+    {% endif %}
+
+    <p><a href="{% url 'search_rooms' %}">Nuova ricerca</a></p>
+</body>
+</html>
