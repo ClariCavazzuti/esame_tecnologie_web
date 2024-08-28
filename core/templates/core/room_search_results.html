@@ -1,36 +1,68 @@
-<!-- templates/core/room_search_results.html -->
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <title>Risultati della Ricerca Camere</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <h1>Risultati della Ricerca Camere</h1>
 
-    {% if camera.camere_totali > 0 %}
-        <ul>
-            {% for camera in camera.camere_totali %}
-                <li>
-                    <div>
-                        {% if camera.immagine1 %}
-                            <img src="{{ camera.immagine1.url }}" alt="Immagine Camera 1" style="max-width: 200px;">
-                        {% endif %}
-                        {% if camera.immagine2 %}
-                            <img src="{{ camera.immagine2.url }}" alt="Immagine Camera 2" style="max-width: 200px;">
-                        {% endif %}
-                        {% if camera.immagine3 %}
-                            <img src="{{ camera.immagine3.url }}" alt="Immagine Camera 3" style="max-width: 200px;">
-                        {% endif %}
-                    </div>
-                    <p><a href="{% url 'book_room' camera.id %}">Prenota questa camera</a></p>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Nessuna camera disponibile per le date e il numero di posti letto selezionati.</p>
-    {% endif %}
+    <form id="prenotazione-form" method="POST">
+        {% csrf_token %}
+        {% if available_rooms %}
+            <ul>
+                {% for camera in available_rooms %}
+                    <li>
+                        <input type="checkbox" name="camere" value="{{ camera.id }}">
+                        {{ camera.nome }} - {{ camera.numero_posti_letto }} posti letto - {{ camera.prezzo_per_notte }}€/notte
+                    </li>
+                {% endfor %}
+            </ul>
+            <button type="button" onclick="confermaPrenotazione()">Conferma Prenotazione</button>
+        {% else %}
+            <p>Nessuna camera disponibile per le date e il numero di posti letto selezionati.</p>
+        {% endif %}
+    </form>
 
     <p><a href="{% url 'search_rooms' %}">Nuova ricerca</a></p>
+
+    <script>
+        function confermaPrenotazione() {
+            // Ottieni gli ID delle camere selezionate
+            var camereSelezionate = [];
+            $("input[name='camere']:checked").each(function() {
+                camereSelezionate.push($(this).val());
+            });
+
+            if (camereSelezionate.length === 0) {
+                alert("Seleziona almeno una camera per effettuare la prenotazione.");
+                return;
+            }
+
+            var conferma = confirm("Confermi la prenotazione delle camere selezionate?");
+            if (conferma) {
+                // Invia la richiesta AJAX
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'ajax_book_rooms' %}",
+                    data: {
+                        'camera_ids': camereSelezionate.join(","),
+                        'check_in_date': '{{ request.GET.check_in_date }}',
+                        'check_out_date': '{{ request.GET.check_out_date }}',
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            window.location.href = "{% url 'core_home' %}"; // Ritorna alla home page
+                        } else {
+                            alert('Errore durante la prenotazione: ' + response.message);
+                        }
+                    }
+                });
+            }
+        }
+    </script>
 </body>
 </html>

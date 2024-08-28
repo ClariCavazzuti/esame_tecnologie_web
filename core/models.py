@@ -32,6 +32,15 @@ class Camera(models.Model):
 
     def __str__(self):
         return f"{self.get_tipo_display()} - {self.numero_posti_letto} posti letto - {self.prezzo_per_notte}€/notte"
+    
+    def decrementa_camere_disponibili(self):
+        if self.camere_totali > 0:
+            self.camere_totali -= 1
+            self.save()
+
+    def incrementa_camere_disponibili(self):
+        self.camere_totali += 1
+        self.save()
 
 
 class Tavolo(models.Model):
@@ -82,4 +91,4 @@ class RoomBooking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Prenotazione di {self.utente.username if self.utente else 'Anonimo'} per {self.camera.get_tipo_display()}"
+        return f"Prenotazione di {self.utente.username} per {self.camera.get_tipo_display()}"

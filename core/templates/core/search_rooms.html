@@ -31,5 +31,14 @@
             </ul>
         </div>
     {% endif %}
+
+    <script>
+        // Imposta la data minima per i campi data a oggi
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('check_in_date').setAttribute('min', today);
+        document.getElementById('check_out_date').setAttribute('min', today);
+    </script>
+
+    <p><a href="{% url 'core_home' %}">Torna alla Home</a></p>
 </body>
 </html>
