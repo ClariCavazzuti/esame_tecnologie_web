@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="it">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,15 +8,14 @@
   <body>
     <!-- templates/core/book_room.html -->
 
-
-{% block content %}
-  <h1>Prenota una Camera: {{ room_type.get_type_display }}</h1>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Prenota</button>
-  </form>
-{% endblock %}
+  {% block content %}
+    <h1>Prenota una Camera: {{ camera.get_tipo_display }}</h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Prenota</button>
+    </form>
+  {% endblock %}
 
   </body>
 </html>

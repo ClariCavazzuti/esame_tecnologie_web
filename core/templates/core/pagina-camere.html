@@ -38,13 +38,13 @@
     <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-inner">
         <div class="carousel-item active">
-          <img src="{{ camere.immagini1.url }}" class="d-block w-100" alt="...">
+          <img src="{{ camere.immagine1.url }}" class="d-block w-100" alt="...">
         </div>
         <div class="carousel-item">
-          <img src="{{ camere.immagini2.url}}" class="d-block w-100" alt="...">
+          <img src="{{ camere.immagine2.url}}" class="d-block w-100" alt="...">
         </div>
         <div class="carousel-item">
-          <img src="{{ camere.immagini3.url}}" class="d-block w-100" alt="...">
+          <img src="{{ camere.immagine3.url}}" class="d-block w-100" alt="...">
         </div>
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
@@ -61,19 +61,11 @@
         <h5 class="card-title">{{camere.nome}}</h5>
         <p class="card-text"> Descrizione: {{camere.descrizione}}
           <p class="card-text"> A partire da: {{camere.prezzo_per_notte}} euro</p>
+          <a href="{% url 'search_rooms' %}" class="btn btn-primary">Prenota</a>
       </div>
     </div>
     {% endfor %}
 </div>
-
-
-
-
-
-
-
-
-
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

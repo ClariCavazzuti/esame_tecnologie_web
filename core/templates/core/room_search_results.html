@@ -8,14 +8,10 @@
 <body>
     <h1>Risultati della Ricerca Camere</h1>
 
-    {% if available_rooms %}
+    {% if camera.camere_totali > 0 %}
         <ul>
-            {% for camera in available_rooms %}
+            {% for camera in camera.camere_totali %}
                 <li>
-                    <h2>{{ camera.nome }} - {{ camera.get_tipo_display }}</h2>
-                    <p>Posti letto: {{ camera.numero_posti_letto }}</p>
-                    <p>Prezzo per notte: €{{ camera.prezzo_per_notte }}</p>
-                    <p>{{ camera.descrizione }}</p>
                     <div>
                         {% if camera.immagine1 %}
                             <img src="{{ camera.immagine1.url }}" alt="Immagine Camera 1" style="max-width: 200px;">
