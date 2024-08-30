@@ -56,7 +56,6 @@ class Camera(models.Model):
 class Tavolo(models.Model):
     numero = models.IntegerField(unique=True)
     posti = models.IntegerField()
-    disponibile = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Tavolo {self.numero} - {self.posti} posti"
@@ -70,13 +69,10 @@ class TavoloBooking(models.Model):
     tavolo = models.ForeignKey(Tavolo, on_delete=models.CASCADE)
     data = models.DateField()
     orario_arrivo = models.TimeField()
-    pasti = [
-        ('pranzo', 'Pranzo'),
-        ('cena', 'Cena'),
-    ]
-    tipo_pasto = models.CharField(choices=pasti, max_length=15)
+    tipo_pasto = models.CharField(choices=[('pranzo', 'Pranzo'), ('cena', 'Cena')], max_length=15)
     numero_persone = models.IntegerField()
     numero_telefono = models.CharField(max_length=15)
+    email = models.EmailField(max_length=254)
     note = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -85,6 +81,7 @@ class TavoloBooking(models.Model):
     class Meta:
         verbose_name = "Prenotazione Tavolo"
         verbose_name_plural = "Prenotazioni Tavoli"
+        ordering = ['data']  # Ordina le prenotazioni per data in modo crescente
 
 class MenuItem(models.Model):
     CATEGORIE = [
@@ -124,6 +121,7 @@ class RoomBooking(models.Model):
     end_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     numero_telefono = models.CharField(max_length=15)
+    email = models.EmailField()
     note = models.TextField(blank=True, null=True)
 
     def __str__(self):

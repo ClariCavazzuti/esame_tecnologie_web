@@ -32,9 +32,9 @@ admin.site.register(Camera, CameraAdmin)
 
 @admin.register(RoomBooking)
 class RoomBookingAdmin(admin.ModelAdmin):
-    list_display = ('utente', 'camera', 'start_date', 'end_date', 'created_at')
+    list_display = ('utente', 'camera', 'start_date', 'end_date', 'created_at', 'email', 'note')
     list_filter = ('camera', 'start_date', 'end_date')
-    search_fields = ('utente__username', 'camera__tipo')
+    search_fields = ('utente__username', 'camera__tipo', 'email')
 
 @admin.register(MenuItem)
 class MenuItemAdmin(admin.ModelAdmin):
@@ -50,19 +50,17 @@ class RecensioneAdmin(admin.ModelAdmin):
 
 @admin.register(Tavolo)
 class TavoloAdmin(admin.ModelAdmin):
-    list_display = ('numero', 'posti', 'disponibile')
-    list_filter = ('posti', 'disponibile')
-    search_fields = ('numero',)
+    list_display = ('numero', 'posti')  # Rimuovi 'disponibile'
+    list_filter = ('numero',)
 
+    
 @admin.register(TavoloBooking)
 class TavoloBookingAdmin(admin.ModelAdmin):
-    list_display = ('user', 'tavolo', 'data', 'orario_arrivo', 'tipo_pasto', 'numero_telefono', 'note')
+    list_display = ('user', 'tavolo', 'data', 'orario_arrivo', 'tipo_pasto', 'numero_telefono', 'email', 'note')
     list_filter = ('data', 'tipo_pasto')
-    search_fields = ('user__username', 'tavolo__numero', 'note')
+    search_fields = ('user__username', 'tavolo__numero', 'note', 'email')
+    ordering = ['data']  # Ordina per data in modo crescente
 
-@admin.register(Core)
-class CoreAdmin(admin.ModelAdmin):
-    list_display = ('campo1', 'campo2')
-    search_fields = ('campo1', 'campo2')
+
 
 

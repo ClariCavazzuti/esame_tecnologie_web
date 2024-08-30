@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Ricerca Camere Disponibili</h1>
-    <form method="GET" action="{% url 'search_rooms' %}">
+    <form method="POST" action="{% url 'search_rooms' %}">
         {% csrf_token %}
         <label for="check_in_date">Data di inizio:</label>
         <input type="date" name="check_in_date" id="check_in_date" required>

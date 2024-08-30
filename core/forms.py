@@ -1,3 +1,4 @@
+from typing import Any
 from django import forms
 from .models import RoomBooking, TavoloBooking
 
@@ -35,8 +36,9 @@ class RoomBookingForm(forms.ModelForm):
 class TavoloBookingForm(forms.ModelForm):
     class Meta:
         model = TavoloBooking
-        fields = ['tavolo', 'data', 'orario_arrivo', 'tipo_pasto', 'numero_persone', 'numero_telefono', 'note']
+        fields = ['data', 'orario_arrivo', 'tipo_pasto', 'numero_persone', 'numero_telefono', 'email', 'note']
         widgets = {
-            'orario_arrivo': forms.TimeInput(format='%H:%M'),
             'data': forms.DateInput(attrs={'type': 'date'}),
+            'orario_arrivo': forms.TimeInput(format='%H:%M', attrs={'type': 'time'}),
         }
+    

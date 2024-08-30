@@ -1,68 +1,79 @@
 <!DOCTYPE html>
 <html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <title>Risultati della Ricerca Camere</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-</head>
-<body>
-    <h1>Risultati della Ricerca Camere</h1>
+    <head>
+        <meta charset="UTF-8">
+        <title>Risultati della Ricerca Camere</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <h1>Risultati della Ricerca Camere</h1>
 
-    <form id="prenotazione-form" method="POST">
-        {% csrf_token %}
-        {% if available_rooms %}
-            <ul>
-                {% for camera in available_rooms %}
-                    <li>
-                        <input type="checkbox" name="camere" value="{{ camera.id }}">
-                        {{ camera.nome }} - {{ camera.numero_posti_letto }} posti letto - {{ camera.prezzo_per_notte }}€/notte
-                    </li>
-                {% endfor %}
-            </ul>
-            <button type="button" onclick="confermaPrenotazione()">Conferma Prenotazione</button>
-        {% else %}
-            <p>Nessuna camera disponibile per le date e il numero di posti letto selezionati.</p>
-        {% endif %}
-    </form>
+        <form id="prenotazione-form" method="POST">
+            {% csrf_token %}
+            {% if available_rooms %}
+                <ul>
+                    {% for camera in available_rooms %}
+                        <li>
+                            <input type="checkbox" name="camere" value="{{ camera.id }}">
+                            {{ camera.nome }} - {{ camera.numero_posti_letto }} posti letto - {{ camera.prezzo_per_notte }}€/notte
+                        </li>
+                    {% endfor %}
+                </ul>
+                <button type="button" onclick="confermaPrenotazione()">Conferma Prenotazione</button>
+            {% else %}
+                <p>Nessuna camera disponibile per le date e il numero di posti letto selezionati.</p>
+            {% endif %}
+        </form>
 
-    <p><a href="{% url 'search_rooms' %}">Nuova ricerca</a></p>
+        <p><a href="{% url 'search_rooms' %}">Nuova ricerca</a></p>
 
-    <script>
-        function confermaPrenotazione() {
-            // Ottieni gli ID delle camere selezionate
-            var camereSelezionate = [];
-            $("input[name='camere']:checked").each(function() {
-                camereSelezionate.push($(this).val());
-            });
-    
-            if (camereSelezionate.length === 0) {
-                alert("Seleziona almeno una camera per effettuare la prenotazione.");
-                return;
-            }
-    
-            var conferma = confirm("Confermi la prenotazione delle camere selezionate?");
-            if (conferma) {
-                // Invia la richiesta AJAX
-                $.ajax({
-                    type: "POST",
-                    url: "{% url 'ajax_book_rooms' %}",
-                    data: {
-                        'camera_ids': camereSelezionate.join(","),
-                        'check_in_date': '{{ request.GET.check_in_date }}',
-                        'check_out_date': '{{ request.GET.check_out_date }}',
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            alert(response.message);
-                            window.location.href = "{% url 'core_home' %}"; // Ritorna alla home page
-                        } else {
-                            alert('Errore durante la prenotazione: ' + response.message);
+        <script>
+            function confermaPrenotazione() {
+                // Mostra la finestra di conferma
+                var conferma = confirm("Confermi la prenotazione delle camere selezionate?");
+                if (conferma) {
+                    // Ottiene il form
+                    var form = document.getElementById('prenotazione-form');
+
+                    // Ottiene i dati dal form
+                    var formData = new FormData(form);
+
+                    // Invia i dati al server utilizzando fetch
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
                         }
-                    }
-                });
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message);  // Mostra il messaggio di successo
+                            window.location.href = "{% url 'core_home' %}";  // Reindirizza alla home page
+                        } else {
+                            // Mostra eventuali errori
+                            var feedbackMessage = document.getElementById('feedback-message');
+                            if (feedbackMessage) {
+                                feedbackMessage.style.display = 'block';
+                                feedbackMessage.textContent = data.message;
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Errore:', error);
+                        alert("Si è verificato un errore. Per favore riprova.");
+                    });
+                }
             }
-        }
-    </script>
-</body>
+
+            document.addEventListener('DOMContentLoaded', function () {
+                // Assicurati che il form sia stato caricato e il JavaScript si riferisca all'elemento giusto
+                var form = document.getElementById('prenotazione-form');
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Blocca l'invio tradizionale del form
+                });
+            });
+        </script>
+    </body>
 </html>

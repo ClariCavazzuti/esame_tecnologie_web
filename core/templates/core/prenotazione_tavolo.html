@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="it">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,14 +36,46 @@
         </div>
       </nav>
 </nav>
-  <body>
+ <body>
     {% block content %}
-<h2>Prenota un Tavolo</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Prenota</button>
-</form>
-{% endblock %}
-  </body>
+    <h2>Prenota un Tavolo</h2>
+    <form method="post">
+        {% csrf_token %}
+        <p><strong>Nome:</strong> {{ user.username }}</p>
+        {{ form.as_p }}
+        <button type="submit">Conferma Prenotazione</button>
+    </form>
+    {% endblock %}
+
+    <script>
+      document.querySelector('form').addEventListener('submit', function(event) {
+          event.preventDefault();  // Previene l'invio standard del form
+          if (confirm("Confermi la prenotazione del tavolo?")) {
+              // Invia il form tramite una richiesta AJAX
+              fetch(this.action, {
+                  method: 'POST',
+                  body: new FormData(this),
+                  headers: {
+                      'X-CSRFToken': '{{ csrf_token }}'
+                  }
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      alert("Tavolo prenotato con successo!");
+                      // Reindirizza alla homepage
+                      window.location.href = "{% url 'core_home' %}";
+                  } else {
+                      alert("Errore nella prenotazione del tavolo: " + data.message);
+                  }
+              })
+              .catch(error => {
+                  alert("Errore nella prenotazione del tavolo.");
+              });
+          }
+      });
+    </script>
+    
+
+ </body>
 </html>
