@@ -4,7 +4,7 @@ from .models import MenuItem, Camera, RoomBooking, TavoloBooking, Tavolo
 from .forms import RoomSearchForm, RoomBookingForm, TavoloBookingForm
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from datetime import date
+from datetime import datetime
 from django.contrib import messages 
 
 # Funzione di utilità per verificare la disponibilità delle camere
@@ -41,25 +41,27 @@ def book_room(request, camera_id):
     if request.method == 'POST':
         form = RoomBookingForm(request.POST)
         if form.is_valid():
-            booking = form.save(commit=False)
-            booking.utente = request.user
-            booking.camera = camera
-            if check_availability(camera, booking.start_date, booking.end_date):
+            start_date = form.cleaned_data['start_date']
+            end_date = form.cleaned_data['end_date']
+            if check_availability(camera, start_date, end_date):
+                booking = form.save(commit=False)
+                booking.user = request.user
+                booking.camera = camera
                 booking.save()
-                if request.is_ajax():
-                    return JsonResponse({'success': True, 'message': 'Prenotazione effettuata con successo.'})
+                messages.success(request, 'Prenotazione effettuata con successo.')
                 return redirect('booking_list')
             else:
-                form.add_error(None, 'Camera non disponibile per il periodo selezionato.')
-                if request.is_ajax():
-                    return JsonResponse({'success': False, 'message': 'Camera non disponibile per il periodo selezionato.'})
+                messages.error(request, 'La camera non è disponibile per il periodo selezionato.')
+        else:
+            messages.error(request, 'Ci sono errori nel modulo. Per favore correggili.')
     else:
         form = RoomBookingForm()
-    if request.is_ajax():
-        return JsonResponse({'success': False, 'message': 'Si è verificato un errore. Form non valido.'})
-    return render(request, 'core/book_room.html', {'form': form, 'camera': camera})
+    return render(request, 'core/book_room.html', {'camera': camera, 'form' : form})
 
-# views.py
+def booking_success(request):
+    return render(request, 'core/booking_success.html')
+
+
 
 def search_rooms(request):
     if request.method == 'POST':
@@ -69,52 +71,71 @@ def search_rooms(request):
             check_out_date = form.cleaned_data['check_out_date']
             posti_letto = form.cleaned_data['posti_letto']
 
+            # Filtra le camere in base ai posti letto
             available_rooms = Camera.objects.filter(
                 numero_posti_letto__gte=posti_letto
             )
 
+            # Filtra ulteriormente per disponibilità
             available_rooms = [camera for camera in available_rooms if check_availability(camera, check_in_date, check_out_date)]
 
-            return render(request, 'core/room_search_results.html', {
-                'available_rooms': available_rooms,
-                'form': form
-            })
+            if not available_rooms:
+                messages.error(request, 'Nessuna camera disponibile per le date e il numero di posti letto selezionati.')
+            else:
+                # Passa le date come parametri alla prossima view
+                return render(request, 'core/room_search_results.html', {
+                    'available_rooms': available_rooms,
+                    'check_in_date': check_in_date,
+                    'check_out_date': check_out_date,
+                })
+
     else:
         form = RoomSearchForm()
     return render(request, 'core/search_rooms.html', {'form': form})
 
 @login_required
-def ajax_book_rooms(request):
+def confirm_booking(request):
     if request.method == 'POST':
-        camera_ids = request.POST.get('camera_ids', '').split(',')
+        selected_room_ids = request.POST.getlist('camere')
         check_in_date = request.POST.get('check_in_date')
         check_out_date = request.POST.get('check_out_date')
-        utente = request.user
+        numero_telefono = request.POST.get('numero_telefono')
+        note = request.POST.get('note')
 
-        if not camera_ids or not check_in_date or not check_out_date:
-            return JsonResponse({'success': False, 'message': 'Dati mancanti. Si prega di fornire tutte le informazioni.'})
+        # Converte le stringhe delle date in oggetti datetime.date
+        try:
+            check_in_date = datetime.strptime(check_in_date, '%Y-%m-%d').date()
+            check_out_date = datetime.strptime(check_out_date, '%Y-%m-%d').date()
+        except ValueError:
+            messages.error(request, 'Il formato della data non è valido.')
+            return redirect('search_rooms')
+        
+        if not selected_room_ids:
+            messages.error(request, 'Seleziona almeno una camera per procedere con la prenotazione.')
+            return redirect('search_rooms')
 
-        camere_prenotate = []
-        for camera_id in camera_ids:
-            try:
-                camera = get_object_or_404(Camera, id=camera_id)
-                if check_availability(camera, check_in_date, check_out_date):
-                    RoomBooking.objects.create(
-                        utente=utente,
-                        camera=camera,
-                        start_date=check_in_date,
-                        end_date=check_out_date
-                    )
-                    camere_prenotate.append(camera.nome)
-                else:
-                    return JsonResponse({'success': False, 'message': f'La camera {camera.nome} non è disponibile per il periodo selezionato.'})
-            except Exception as e:
-                return JsonResponse({'success': False, 'message': f'Errore durante la prenotazione della camera {camera_id}: {str(e)}'})
+        # Effettua la prenotazione per ogni camera selezionata
+        for room_id in selected_room_ids:
+            camera = get_object_or_404(Camera, id=room_id)
+            if check_availability(camera, check_in_date, check_out_date):
+                RoomBooking.objects.create(
+                    user=request.user,
+                    camera=camera,
+                    start_date=check_in_date,
+                    end_date=check_out_date,
+                    numero_telefono=numero_telefono,
+                    email=request.user.email,
+                    note=note
+                )
+            else:
+                messages.error(request, f"La camera {camera.nome} non è più disponibile per le date selezionate.")
+                return redirect('search_rooms')
+        
+        messages.success(request, 'Prenotazione effettuata con successo!')
+        return redirect('booking_success')
+    return redirect('search_rooms')
 
-        return JsonResponse({'success': True, 'message': 'Prenotazione effettuata con successo per le seguenti camere: ' + ', '.join(camere_prenotate)})
 
-    return JsonResponse({'success': False, 'message': 'Metodo non consentito'})
-   
 @login_required
 def cancella_prenotazione(request, prenotazione_id):
     prenotazione = get_object_or_404(RoomBooking, id=prenotazione_id, utente=request.user)

@@ -32,9 +32,9 @@ admin.site.register(Camera, CameraAdmin)
 
 @admin.register(RoomBooking)
 class RoomBookingAdmin(admin.ModelAdmin):
-    list_display = ('utente', 'camera', 'start_date', 'end_date', 'created_at', 'email', 'note')
+    list_display = ('user', 'camera', 'start_date', 'end_date', 'created_at', 'email', 'numero_telefono', 'note')
     list_filter = ('camera', 'start_date', 'end_date')
-    search_fields = ('utente__username', 'camera__tipo', 'email')
+    search_fields = ('user__username', 'camera__tipo', 'email')
 
 @admin.register(MenuItem)
 class MenuItemAdmin(admin.ModelAdmin):

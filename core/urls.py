@@ -7,7 +7,8 @@ urlpatterns = [
     path('camere', views.camere, name='camere'),
     path('book_room/<int:camera_id>/', views.book_room, name='book_room'),
     path('search_rooms', views.search_rooms, name='search_rooms'),
-    path('ajax/book_rooms/', views.ajax_book_rooms, name='ajax_book_rooms'),
+    path('confirm_booking/', views.confirm_booking, name='confirm_booking'),
+    path('booking_success/', views.booking_success, name='booking_success'),
     path('cancella_prenotazione/<int:prenotazione_id>/', views.cancella_prenotazione, name='cancella_prenotazione'),
     path('prenotazione_tavolo/', views.prenotazione_tavolo, name='prenotazione_tavolo'),
 ]

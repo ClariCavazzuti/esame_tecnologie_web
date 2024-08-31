@@ -43,10 +43,6 @@ class Camera(models.Model):
         if bookings_in_range < self.camere_totali:
             return True
         return False
-
-    def incrementa_camere_disponibili(self):
-        self.camere_totali += 1
-        self.save()
     
     class Meta:
         verbose_name = "Camera"
@@ -115,17 +111,17 @@ class Recensione(models.Model):
 
 
 class RoomBooking(models.Model):
-    utente = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     camera = models.ForeignKey(Camera, on_delete=models.CASCADE)  # Associazione corretta alla classe Camera
     start_date = models.DateField()
     end_date = models.DateField()
-    created_at = models.DateTimeField(auto_now_add=True)
     numero_telefono = models.CharField(max_length=15)
     email = models.EmailField()
     note = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Prenotazione di {self.utente.username} per {self.camera.get_tipo_display()}"
+        return f"Prenotazione di {self.user.username} per {self.camera.get_tipo_display()}"
 
     class Meta:
         verbose_name = "Prenotazione"

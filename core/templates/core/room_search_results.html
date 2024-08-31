@@ -1,79 +1,48 @@
 <!DOCTYPE html>
 <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <title>Risultati della Ricerca Camere</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    </head>
-    <body>
-        <h1>Risultati della Ricerca Camere</h1>
+<head>
+    <meta charset="UTF-8">
+    <title>Risultati della Ricerca Camere</title>
+</head>
+<body>
+    <h1>Risultati della Ricerca Camere</h1>
 
-        <form id="prenotazione-form" method="POST">
-            {% csrf_token %}
-            {% if available_rooms %}
-                <ul>
-                    {% for camera in available_rooms %}
-                        <li>
-                            <input type="checkbox" name="camere" value="{{ camera.id }}">
-                            {{ camera.nome }} - {{ camera.numero_posti_letto }} posti letto - {{ camera.prezzo_per_notte }}€/notte
-                        </li>
-                    {% endfor %}
-                </ul>
-                <button type="button" onclick="confermaPrenotazione()">Conferma Prenotazione</button>
-            {% else %}
-                <p>Nessuna camera disponibile per le date e il numero di posti letto selezionati.</p>
-            {% endif %}
-        </form>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
 
-        <p><a href="{% url 'search_rooms' %}">Nuova ricerca</a></p>
+    <form method="POST" action="{% url 'confirm_booking' %}">
+        {% csrf_token %}
+        <!-- Convertiamo le date nel formato YYYY-MM-DD -->
+        <input type="hidden" name="check_in_date" value="{{ check_in_date|date:'Y-m-d' }}">
+        <input type="hidden" name="check_out_date" value="{{ check_out_date|date:'Y-m-d' }}">
 
-        <script>
-            function confermaPrenotazione() {
-                // Mostra la finestra di conferma
-                var conferma = confirm("Confermi la prenotazione delle camere selezionate?");
-                if (conferma) {
-                    // Ottiene il form
-                    var form = document.getElementById('prenotazione-form');
+        {% if available_rooms %}
+            <ul>
+                {% for camera in available_rooms %}
+                    <li>
+                        <input type="checkbox" name="camere" value="{{ camera.id }}">
+                        {{ camera.nome }} - {{ camera.numero_posti_letto }} posti letto - {{ camera.prezzo_per_notte }}€/notte
+                    </li>
+                {% endfor %}
+            </ul>
 
-                    // Ottiene i dati dal form
-                    var formData = new FormData(form);
+            <label for="numero_telefono">Numero di Telefono:</label>
+            <input type="text" name="numero_telefono" id="numero_telefono" required>
 
-                    // Invia i dati al server utilizzando fetch
-                    fetch(form.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert(data.message);  // Mostra il messaggio di successo
-                            window.location.href = "{% url 'core_home' %}";  // Reindirizza alla home page
-                        } else {
-                            // Mostra eventuali errori
-                            var feedbackMessage = document.getElementById('feedback-message');
-                            if (feedbackMessage) {
-                                feedbackMessage.style.display = 'block';
-                                feedbackMessage.textContent = data.message;
-                            }
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Errore:', error);
-                        alert("Si è verificato un errore. Per favore riprova.");
-                    });
-                }
-            }
+            <label for="note">Note:</label>
+            <textarea name="note" id="note"></textarea>
 
-            document.addEventListener('DOMContentLoaded', function () {
-                // Assicurati che il form sia stato caricato e il JavaScript si riferisca all'elemento giusto
-                var form = document.getElementById('prenotazione-form');
-                form.addEventListener('submit', function(event) {
-                    event.preventDefault(); // Blocca l'invio tradizionale del form
-                });
-            });
-        </script>
-    </body>
+            <button type="submit">Conferma Prenotazione</button>
+        {% else %}
+            <p>Nessuna camera disponibile per le date e il numero di posti letto selezionati.</p>
+        {% endif %}
+    </form>
+
+    <p><a href="{% url 'search_rooms' %}">Nuova ricerca</a></p>
+</body>
 </html>

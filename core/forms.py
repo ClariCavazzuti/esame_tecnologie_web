@@ -13,10 +13,11 @@ class RoomSearchForm(forms.Form):
 class RoomBookingForm(forms.ModelForm):
     class Meta:
         model = RoomBooking
-        fields = ['camera', 'start_date', 'end_date', 'numero_telefono', 'note']
+        fields = ['start_date', 'end_date', 'numero_telefono', 'email', 'note']
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),
             'end_date': forms.DateInput(attrs={'type': 'date'}),
+            'note': forms.Textarea(attrs={'rows': 3}),
         }
 
     def clean(self):
