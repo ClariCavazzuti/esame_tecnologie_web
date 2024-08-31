@@ -26,7 +26,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Menu</a>
+              <a class="nav-link active" aria-current="page" href="#">Dicono Di Noi</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'core_home' %}">Home</a>
@@ -38,7 +38,7 @@
               <a class="nav-link" href="{% url 'prenotazione_tavolo' %}">Prenota Un Tavolo</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'recensioni' %}">Dicono di Noi</a>
+              <a class="nav-link" href="{% url 'menu' %}">Menu</a>
             </li>
           </ul>
         </div>
@@ -46,23 +46,21 @@
     </nav>
 
     <div class="container my-5 text-center">
-      <h1>Il Nostro Menù</h1>
-      <p class="lead">Benvenuti, per qualsiasi domanda sui piatti o sui possibili allergeni siamo a vostra disposizione</p>
-      <button type="button" class="btn btn-secondary">Lista Allergeni</button>
+      <h1>Recensioni dei visitatori</h1>
     </div>
 
     <div class="container">
-      {% for category, items in menu_items.items %}
+      {% for category, items in recensioni.items %}
         <h2 class="my-4">{{ category|capfirst }}</h2>
         <div class="row">
-          {% for dati in items %}
+          {% for recensioni in items %}
             <div class="col-md-4 mb-4 d-flex align-items-stretch">
               <div class="card" style="width: 100%;">
-                <img src="{{ dati.immagine.url }}" class="card-img-top" alt="Immagine del piatto">
+                <img src="{{ recensioni.immagine.url }}" class="card-img-top" alt="Immagine">
                 <div class="card-body">
-                  <h5 class="card-title">{{ dati.nome }}</h5>
-                  <p class="card-text">{{ dati.prezzo }} euro</p>
-                  <p class="card-text">Descrizione: {{ dati.descrizione }}</p>
+                  <h5 class="card-title">Recensione di {{ recensioni.user }} del {{recensioni.data}}</h5>
+                  <p class="card-text">ha assegnato un voto di {{ recensioni.voto }}</p>
+                  <p class="card-text">Commenti: {{ recensioni.commento }}</p>
                 </div>
               </div>
             </div>

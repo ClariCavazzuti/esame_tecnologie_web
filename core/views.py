@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import MenuItem, Camera, RoomBooking, TavoloBooking, Tavolo
-from .forms import RoomSearchForm, RoomBookingForm, TavoloBookingForm
+from .models import MenuItem, Camera, RoomBooking, TavoloBooking, Tavolo, Recensione
+from .forms import RoomSearchForm, RoomBookingForm, TavoloBookingForm, RecensioneForm
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from django.contrib import messages 
+from django.core.exceptions import ValidationError
 
 # Funzione di utilità per verificare la disponibilità delle camere
 def check_availability(camera, start_date, end_date):
@@ -29,6 +30,29 @@ def menu(request):
         'bevande': MenuItem.objects.filter(categoria='bevande'),
     }
     return render(request, 'core/pagina-menu.html', {'menu_items': menu_items})
+
+def recensione(request):
+    recensioni={
+        Recensione.objects.all(),
+    }
+    return render(request,'core/recensioni.html', {'recensioni' : recensioni})
+
+@login_required
+def aggiungi_recensione(request):
+    if request.method == 'POST':
+        form = RecensioneForm(request.POST, request.FILES)
+        if form.is_valid():
+            recensione = form.save(commit=False) #creo la recensione senza salvarla 
+            recensione.user = request.user
+            #recensione.clean()
+            recensione.save()
+            return redirect('core_home')
+    
+    else:
+        form = RecensioneForm()
+    
+    return render(request, 'core/aggiungi_recensione.html', {'form': form})
+
 
 def camere(request):
     camere = Camera.objects.all()
@@ -61,7 +85,8 @@ def book_room(request, camera_id):
 def booking_success(request):
     return render(request, 'core/booking_success.html')
 
-
+def area_personale(request):
+    return render(request, 'core/area_personale.html')
 
 def search_rooms(request):
     if request.method == 'POST':

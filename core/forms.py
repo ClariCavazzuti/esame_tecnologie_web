@@ -1,6 +1,6 @@
 from typing import Any
 from django import forms
-from .models import RoomBooking, TavoloBooking
+from .models import RoomBooking, TavoloBooking, Recensione
 
 class RoomSearchForm(forms.Form):
     """
@@ -42,4 +42,9 @@ class TavoloBookingForm(forms.ModelForm):
             'data': forms.DateInput(attrs={'type': 'date'}),
             'orario_arrivo': forms.TimeInput(format='%H:%M', attrs={'type': 'time'}),
         }
-    
+
+class RecensioneForm(forms.ModelForm):
+    class Meta:
+        model = Recensione
+        exclude = ['user']
+        fields = ['voto', 'commento', 'immagine', 'categoria', 'data']

@@ -11,4 +11,7 @@ urlpatterns = [
     path('booking_success/', views.booking_success, name='booking_success'),
     path('cancella_prenotazione/<int:prenotazione_id>/', views.cancella_prenotazione, name='cancella_prenotazione'),
     path('prenotazione_tavolo/', views.prenotazione_tavolo, name='prenotazione_tavolo'),
+    path('area_personale',views.area_personale, name='area_personale'),
+    path('recensioni', views.recensione, name='recensioni'),
+    path('aggiungi-recensione/', views.aggiungi_recensione, name='aggiungi_recensione'),
 ]

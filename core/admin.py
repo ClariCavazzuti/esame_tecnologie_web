@@ -44,9 +44,9 @@ class MenuItemAdmin(admin.ModelAdmin):
 
 @admin.register(Recensione)
 class RecensioneAdmin(admin.ModelAdmin):
-    list_display = ('utente', 'voto', 'created_at')
+    list_display = ('user', 'voto', 'created_at')
     list_filter = ('voto', 'created_at')
-    search_fields = ('utente__username', 'commento')
+    search_fields = ('user__username', 'commento')
 
 @admin.register(Tavolo)
 class TavoloAdmin(admin.ModelAdmin):

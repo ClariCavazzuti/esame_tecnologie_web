@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 class Core(models.Model):
     campo1 = models.CharField(max_length=100)
@@ -100,14 +102,26 @@ class MenuItem(models.Model):
 
 
 class Recensione(models.Model):
-    utente = models.ForeignKey(User, on_delete=models.CASCADE)
+    CATEGORIE = [
+        ('ristorante', 'Ristorante'),
+        ('albergo', 'Albergo'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     voto = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])
     commento = models.TextField()
     immagine = models.ImageField(upload_to='review_images/', null=True, blank=True)
+    categoria = models.CharField(max_length=20, choices=CATEGORIE)
+    data = models.DateField(default=timezone.now) 
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Recensione di {self.utente.username}"
+        return f"Recensione di {self.user.username}"
+
+        
+    def save(self, *args, **kwargs):
+       self.clean()  # Esegue la pulizia (e il controllo) prima di salvare
+       super().save(*args, **kwargs)
+
 
 
 class RoomBooking(models.Model):

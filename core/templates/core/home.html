@@ -66,12 +66,16 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'prenotazione_tavolo' %}">Prenota Un Tavolo</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'recensioni' %}">Dicono di Noi</a>
+                </li>
             </ul>
             {% if user.is_authenticated %}
                 <!-- Pulsante di Logout -->
                 <form action="{% url 'logout' %}" method="post" style="display:inline;">
                      {% csrf_token %}
                     <button type="submit" class="btn btn-logout">Logout</button>
+                    <a href="{% url 'area_personale' %}" class="btn btn-register">Area Personale</a>
                 </form>
 
             {% else %}
