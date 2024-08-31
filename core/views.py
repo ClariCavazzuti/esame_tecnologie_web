@@ -31,11 +31,24 @@ def menu(request):
     }
     return render(request, 'core/pagina-menu.html', {'menu_items': menu_items})
 
+
 def recensione(request):
-    recensioni={
-        Recensione.objects.all(),
+    # Prendi il parametro di ordinamento dalla richiesta GET, di default ordina per data
+    ordine = request.GET.get('ordine', 'data')
+    
+    # Filtra le recensioni per categoria e ordina secondo il parametro scelto
+    recensioni_ristorante = Recensione.objects.filter(categoria='ristorante').order_by(ordine)
+    recensioni_albergo = Recensione.objects.filter(categoria='albergo').order_by(ordine)
+    
+    context = {
+        'recensioni': {
+            'ristorante': recensioni_ristorante,
+            'albergo': recensioni_albergo,
+        },
+        'ordine_corrente': ordine,  # Aggiungi il parametro di ordinamento corrente al contesto
     }
-    return render(request,'core/recensioni.html', {'recensioni' : recensioni})
+    
+    return render(request, 'core/recensioni.html', context)
 
 @login_required
 def aggiungi_recensione(request):
@@ -85,8 +98,20 @@ def book_room(request, camera_id):
 def booking_success(request):
     return render(request, 'core/booking_success.html')
 
+@login_required
 def area_personale(request):
-    return render(request, 'core/area_personale.html')
+    # Recupera le prenotazioni camere, tavoli e recensioni dell'utente
+    prenotazioni_camere = RoomBooking.objects.filter(user=request.user)
+    prenotazioni_tavoli = TavoloBooking.objects.filter(user=request.user)
+    recensioni = Recensione.objects.filter(user=request.user)
+
+    context = {
+        'prenotazioni_camere': prenotazioni_camere,
+        'prenotazioni_tavoli': prenotazioni_tavoli,
+        'recensioni': recensioni,
+    }
+    
+    return render(request, 'core/area_personale.html', context)
 
 def search_rooms(request):
     if request.method == 'POST':
@@ -162,14 +187,27 @@ def confirm_booking(request):
 
 
 @login_required
-def cancella_prenotazione(request, prenotazione_id):
-    prenotazione = get_object_or_404(RoomBooking, id=prenotazione_id, utente=request.user)
+def elimina_prenotazione_camera(request, prenotazione_id):
+    prenotazione = get_object_or_404(RoomBooking, id=prenotazione_id, user=request.user)
     camera = prenotazione.camera
-    camera.incrementa_camere_disponibili()
     prenotazione.delete()
-    messages.success(request, 'Prenotazione cancellata con successo.')
-    return redirect('core_home')
+    messages.success(request, f"La prenotazione della camera {camera.nome} è stata eliminata con successo.")
+    return redirect('area_personale')
 
+@login_required
+def elimina_prenotazione_tavolo(request, prenotazione_id):
+    prenotazione = get_object_or_404(TavoloBooking, id=prenotazione_id, user=request.user)
+    tavolo = prenotazione.tavolo
+    prenotazione.delete()
+    messages.success(request, f"La prenotazione del tavolo numero {tavolo.numero} è stata eliminata con successo.")
+    return redirect('area_personale')
+
+@login_required
+def elimina_recensione(request, recensione_id):
+    recensione = get_object_or_404(Recensione, id=recensione_id, user=request.user)
+    recensione.delete()
+    messages.success(request, 'Recensione eliminata con successo')
+    return redirect('area_personale')
 
 @login_required
 def prenotazione_tavolo(request):

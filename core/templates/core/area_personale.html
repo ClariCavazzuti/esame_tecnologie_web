@@ -1,14 +1,128 @@
 <!doctype html>
-<html lang="en">
+<html lang="it">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
+    <title>Area Personale</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+      .section-title {
+        margin-top: 40px;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+      }
+      .card {
+        margin-bottom: 20px;
+      }
+      .delete-btn {
+        background-color: #dc3545;
+        color: white;
+      }
+      .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+      }
+      .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+      }
+      .alert-dismissible .btn-close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 1.25rem 1rem;
+      }
+    </style>
   </head>
   <body>
-    <h1>Hello, world!</h1>
-    <a href="{% url 'aggiungi_recensione' %}" class="btn btn-register">Scrivi una Recensione</a>
+    <div class="container my-5">
+      <!-- Sezione Messaggi -->
+      {% if messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+
+      <!-- Intestazione e Pulsanti di Navigazione -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-center">Area Personale</h1>
+        <div>
+          <a href="{% url 'core_home' %}" class="btn btn-primary me-2">Torna alla Home</a>
+          <a href="{% url 'aggiungi_recensione' %}" class="btn btn-secondary">Scrivi una Recensione</a>
+        </div>
+      </div>
+
+      <!-- Sezione Prenotazioni Camere -->
+      <h2 class="section-title">Le Tue Prenotazioni Camere</h2>
+      <div class="row">
+        {% for prenotazione in prenotazioni_camere %}
+          <div class="col-md-4">
+            <div class="card">
+              <img src="{{ prenotazione.camera.immagine1.url }}" class="card-img-top" alt="Immagine camera">
+              <div class="card-body">
+                <h5 class="card-title">{{ prenotazione.camera.nome }}</h5>
+                <p class="card-text">Data: {{ prenotazione.data_inizio }} - {{ prenotazione.data_fine }}</p>
+                <p class="card-text">Numero di posti letto: {{ prenotazione.camera.numero_posti_letto }}</p>
+                <p class="card-text">Prezzo per notte: €{{ prenotazione.camera.prezzo_per_notte }}</p>
+                <form method="POST" action="{% url 'elimina_prenotazione_camera' prenotazione.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn delete-btn" onclick="return confirm('Sei sicuro di voler eliminare questa prenotazione?');">Elimina</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Sezione Prenotazioni Tavoli -->
+      <h2 class="section-title">Le Tue Prenotazioni Tavoli</h2>
+      <div class="row">
+        {% for prenotazione in prenotazioni_tavoli %}
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Tavolo Numero {{ prenotazione.tavolo.numero }}</h5>
+                <p class="card-text">Numero di posti: {{ prenotazione.tavolo.posti }}</p>
+                <p class="card-text">Data: {{ prenotazione.data }}</p>
+                <form method="POST" action="{% url 'elimina_prenotazione_tavolo' prenotazione.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn delete-btn" onclick="return confirm('Sei sicuro di voler eliminare questa prenotazione?');">Elimina</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Sezione Recensioni -->
+      <h2 class="section-title">Le Tue Recensioni</h2>
+      <div class="row">
+        {% for recensione in recensioni %}
+          <div class="col-md-4">
+            <div class="card">
+              {% if recensione.immagine %}
+                <img src="{{ recensione.immagine.url }}" class="card-img-top" alt="Immagine recensione">
+              {% endif %}
+              <div class="card-body">
+                <h5 class="card-title">Recensione di {{ recensione.categoria|capfirst }}</h5>
+                <p class="card-text">Voto: {{ recensione.voto }}</p>
+                <p class="card-text">Commento: {{ recensione.commento }}</p>
+                <p class="card-text">Data: {{ recensione.data }}</p>
+                <form method="POST" action="{% url 'elimina_recensione' recensione.id %}" onsubmit="return confirm('Sei sicuro di voler eliminare questa recensione?');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn delete-btn">Elimina</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   </body>
 </html>

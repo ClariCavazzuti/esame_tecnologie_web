@@ -50,17 +50,31 @@
     </div>
 
     <div class="container">
+      <!-- Aggiungi opzioni di ordinamento -->
+      <div class="mb-4">
+        <form method="GET" action="">
+          <label for="ordine" class="form-label">Ordina per:</label>
+          <select name="ordine" id="ordine" class="form-select w-auto d-inline-block">
+            <option value="data" {% if ordine_corrente == "data" %}selected{% endif %}>Data</option>
+            <option value="voto" {% if ordine_corrente == "voto" %}selected{% endif %}>Voto</option>
+          </select>
+          <button type="submit" class="btn btn-primary">Ordina</button>
+        </form>
+      </div>
+
       {% for category, items in recensioni.items %}
         <h2 class="my-4">{{ category|capfirst }}</h2>
         <div class="row">
-          {% for recensioni in items %}
+          {% for recensione in items %}
             <div class="col-md-4 mb-4 d-flex align-items-stretch">
               <div class="card" style="width: 100%;">
-                <img src="{{ recensioni.immagine.url }}" class="card-img-top" alt="Immagine">
+                {% if recensione.immagine %}
+                  <img src="{{ recensione.immagine.url }}" class="card-img-top" alt="Immagine">
+                {% endif %}
                 <div class="card-body">
-                  <h5 class="card-title">Recensione di {{ recensioni.user }} del {{recensioni.data}}</h5>
-                  <p class="card-text">ha assegnato un voto di {{ recensioni.voto }}</p>
-                  <p class="card-text">Commenti: {{ recensioni.commento }}</p>
+                  <h5 class="card-title">Recensione di {{ recensione.user }} del {{recensione.data}}</h5>
+                  <p class="card-text">ha assegnato un voto di {{ recensione.voto }}</p>
+                  <p class="card-text">Commenti: {{ recensione.commento }}</p>
                 </div>
               </div>
             </div>
