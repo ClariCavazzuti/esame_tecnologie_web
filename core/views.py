@@ -71,6 +71,9 @@ def camere(request):
     camere = Camera.objects.all()
     return render(request, 'core/pagina-camere.html', {'camere': camere})
 
+def tavoli(request):
+    return render(request,'core/tavoli.html')
+
 
 @login_required
 def book_room(request, camera_id):
@@ -238,3 +241,4 @@ def prenotazione_tavolo(request):
     else:
         form = TavoloBookingForm()
     return render(request, 'core/prenotazione_tavolo.html', {'form': form})
+

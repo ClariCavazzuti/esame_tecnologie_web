@@ -9,6 +9,7 @@ urlpatterns = [
     path('search_rooms', views.search_rooms, name='search_rooms'),
     path('confirm_booking/', views.confirm_booking, name='confirm_booking'),
     path('booking_success/', views.booking_success, name='booking_success'),
+    path('tavoli/', views.tavoli, name='tavoli'),
     path('prenotazione_tavolo/', views.prenotazione_tavolo, name='prenotazione_tavolo'),
     path('area_personale',views.area_personale, name='area_personale'),
     path('recensioni', views.recensione, name='recensioni'),

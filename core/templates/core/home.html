@@ -7,10 +7,15 @@
     <title>Kristall Ristorante e Albergo</title>
     <!-- Link Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Link Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
         }
+
+        /* Hero Section */
         .hero-section {
             background-image: url('{% static "core/home.png" %}');
             background-size: cover;
@@ -19,7 +24,27 @@
             text-align: center;
             padding: 100px 0;
         }
-        .navbar .btn-login, .navbar .btn-logout {
+
+        .hero-section h1,
+        .hero-section p {
+            font-family: 'Playfair Display', serif; /* Font elegante */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Bordo nero */
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .hero-section p {
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+
+        /* Navbar Buttons */
+        .navbar .btn-login,
+        .navbar .btn-logout,
+        .navbar .btn-register {
             color: white;
             background-color: #000; /* Nero */
             border: none;
@@ -27,20 +52,65 @@
             border-radius: 3px;
             text-align: center;
             margin-right: 10px; /* Spazio tra i pulsanti */
+            transition: background-color 0.3s;
         }
-        .navbar .btn-login:hover, .navbar .btn-logout:hover {
+
+        .navbar .btn-login:hover,
+        .navbar .btn-logout:hover,
+        .navbar .btn-register:hover {
             background-color: #333; /* Colore nero più chiaro al passaggio del mouse */
         }
+
         .navbar .btn-register {
-            color: white;
             background-color: #6c757d; /* Grigio Bootstrap */
-            border: none;
-            padding: 5px 15px;
-            border-radius: 3px;
-            text-align: center;
         }
+
         .navbar .btn-register:hover {
             background-color: #5a6268; /* Grigio più scuro al passaggio del mouse */
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 960px;
+            margin: auto;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif; /* Font elegante */
+            font-size: 2rem;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: #343a40;
+            text-align: center;
+        }
+
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #6c757d;
+            text-align: center; /* Testo centrato */
+        }
+
+        .list-unstyled {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #343a40;
+            text-align: center; /* Testo centrato */
+        }
+
+        .list-unstyled i {
+            margin-right: 10px;
+            color: #007bff;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+
+        footer p {
+            margin: 0;
         }
     </style>
 </head>
@@ -58,13 +128,10 @@
                     <a class="nav-link active" aria-current="page" href="#">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'menu' %}">Menu</a>
+                    <a class="nav-link" href="{% url 'camere' %}">Albergo</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'camere' %}">Prenota Una Camera</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'prenotazione_tavolo' %}">Prenota Un Tavolo</a>
+                    <a class="nav-link" href="{% url 'tavoli' %}">Ristorante</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'recensioni' %}">Dicono di Noi</a>
@@ -77,7 +144,6 @@
                     <button type="submit" class="btn btn-logout">Logout</button>
                     <a href="{% url 'area_personale' %}" class="btn btn-register">Area Personale</a>
                 </form>
-
             {% else %}
                 <!-- Pulsanti di Login e Registrati -->
                 <a href="{% url 'login' %}" class="btn btn-login">Login</a>
@@ -90,7 +156,6 @@
     <section class="hero-section">
         <div class="container">
             <h1>Benvenuti al Ristorante e Albergo Kristall</h1>
-            <p>La vostra oasi di gusto e relax nel cuore della città.</p>
         </div>
     </section>
 
@@ -103,6 +168,16 @@
         <p>Il nostro albergo offre camere confortevoli e ben arredate per un soggiorno rilassante. Prenota una camera e goditi un'esperienza di comfort e ospitalità senza pari.</p>
     </div>
 
+    <div class="container">
+        <h2>Contattaci</h2>
+        <p>Per qualsiasi informazione o per prenotare un tavolo, non esitare a contattarci.</p>
+        <ul class="list-unstyled">
+            <li><i class="fas fa-map-marker-alt"></i> Via delle Alpi, 123, 16010 Montagna</li>
+            <li><i class="fas fa-phone"></i> +39 012 345 6789</li>
+            <li><i class="fas fa-envelope"></i> info@kristallristorante.it</li>
+        </ul>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-light text-center py-3">
         <p>&copy; 2024 Kristall Ristorante e Albergo. Tutti i diritti riservati.</p>
@@ -112,5 +187,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Font Awesome per le icone -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>

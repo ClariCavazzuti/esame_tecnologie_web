@@ -2,47 +2,95 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Risultati della Ricerca Camere</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Risultati della Ricerca Camere</h1>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-
-    <form method="POST" action="{% url 'confirm_booking' %}">
-        {% csrf_token %}
-        <!-- Convertiamo le date nel formato YYYY-MM-DD -->
-        <input type="hidden" name="check_in_date" value="{{ check_in_date|date:'Y-m-d' }}">
-        <input type="hidden" name="check_out_date" value="{{ check_out_date|date:'Y-m-d' }}">
-
-        {% if available_rooms %}
-            <ul>
-                {% for camera in available_rooms %}
-                    <li>
-                        <input type="checkbox" name="camere" value="{{ camera.id }}">
-                        {{ camera.nome }} - {{ camera.numero_posti_letto }} posti letto - {{ camera.prezzo_per_notte }}€/notte
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Kristall</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Albergo</a>
                     </li>
-                {% endfor %}
-            </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core_home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'tavoli' %}">Ristorante</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'recensioni' %}">Dicono di Noi</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-            <label for="numero_telefono">Numero di Telefono:</label>
-            <input type="text" name="numero_telefono" id="numero_telefono" required>
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <h1 class="mb-4">Risultati della Ricerca Camere</h1>
 
-            <label for="note">Note:</label>
-            <textarea name="note" id="note"></textarea>
-
-            <button type="submit">Conferma Prenotazione</button>
-        {% else %}
-            <p>Nessuna camera disponibile per le date e il numero di posti letto selezionati.</p>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
         {% endif %}
-    </form>
 
-    <p><a href="{% url 'search_rooms' %}">Nuova ricerca</a></p>
+        <form method="POST" action="{% url 'confirm_booking' %}">
+            {% csrf_token %}
+            <!-- Convertiamo le date nel formato YYYY-MM-DD -->
+            <input type="hidden" name="check_in_date" value="{{ check_in_date|date:'Y-m-d' }}">
+            <input type="hidden" name="check_out_date" value="{{ check_out_date|date:'Y-m-d' }}">
+
+            {% if available_rooms %}
+                <ul class="list-group mb-4">
+                    {% for camera in available_rooms %}
+                        <li class="list-group-item">
+                            <input type="checkbox" name="camere" value="{{ camera.id }}">
+                            <strong>{{ camera.nome }}</strong> - {{ camera.numero_posti_letto }} posti letto - {{ camera.prezzo_per_notte }}€/notte
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="form-group">
+                    <label for="numero_telefono">Numero di Telefono:</label>
+                    <input type="text" class="form-control" name="numero_telefono" id="numero_telefono" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="note">Note:</label>
+                    <textarea class="form-control" name="note" id="note" rows="3"></textarea>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <button type="submit" class="btn btn-primary">Conferma Prenotazione</button>
+                {% else %}
+                    <p>
+                        <a href="{% url 'login' %}" class="link-underline-dark">Per prenotare è necessario accedere al proprio account, premi qui per accedere</a>
+                    </p>
+                {% endif %}
+            {% else %}
+                <p class="alert alert-warning">Nessuna camera disponibile per le date e il numero di posti letto selezionati.</p>
+            {% endif %}
+        </form>
+
+        <p><a href="{% url 'search_rooms' %}" class="btn btn-secondary mt-3">Nuova ricerca</a></p>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
