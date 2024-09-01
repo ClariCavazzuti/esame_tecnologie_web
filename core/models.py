@@ -22,15 +22,16 @@ class Camera(models.Model):
         (LARGE, 'Grande'),
     ]
 
-    tipo = models.CharField(max_length=10, choices=ROOM_SIZE_CHOICES, unique=True)
+    tipo = models.CharField(max_length=10, choices=ROOM_SIZE_CHOICES)
     camere_totali = models.IntegerField(default=0)  # Numero totale di camere di questo tipo
     nome = models.CharField(max_length=50)
     numero_posti_letto = models.IntegerField(default=1)
     prezzo_per_notte = models.DecimalField(max_digits=10, decimal_places=2)  # Prezzo per notte
-    descrizione = models.TextField(blank=True, null=True)
-    immagine1 = models.ImageField(upload_to='camere/', blank=True, null=True)
-    immagine2 = models.ImageField(upload_to='camere/', blank=True, null=True)
-    immagine3 = models.ImageField(upload_to='camere/', blank=True, null=True)
+    descrizione = models.TextField(blank=True)
+    MY_CONSTANT = "camere/"
+    immagine1 = models.ImageField(upload_to= MY_CONSTANT, blank=True, null=True)
+    immagine2 = models.ImageField(upload_to= MY_CONSTANT, blank=True, null=True)
+    immagine3 = models.ImageField(upload_to= MY_CONSTANT, blank=True, null=True)
 
     def __str__(self):
         return f"{self.get_tipo_display()} - {self.numero_posti_letto} posti letto - {self.prezzo_per_notte}€/notte"
@@ -71,7 +72,7 @@ class TavoloBooking(models.Model):
     numero_persone = models.IntegerField()
     numero_telefono = models.CharField(max_length=15)
     email = models.EmailField(max_length=254)
-    note = models.TextField(blank=True, null=True)
+    note = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.tavolo} - {self.data} - {self.tipo_pasto}"
@@ -91,7 +92,7 @@ class MenuItem(models.Model):
         ('bevande', 'Bevande'),
     ]
 
-    nome = models.CharField(max_length=100)
+    nome = models.CharField(max_length=100, unique=True)
     descrizione = models.TextField()
     prezzo = models.DecimalField(max_digits=5, decimal_places=2)
     categoria = models.CharField(max_length=20, choices=CATEGORIE)
@@ -99,6 +100,10 @@ class MenuItem(models.Model):
 
     def __str__(self):
         return self.nome
+       
+    class Meta:
+        verbose_name = "Articolo del Menu"
+        verbose_name_plural = "Articoli del Menu"
 
 
 class Recensione(models.Model):
@@ -121,6 +126,10 @@ class Recensione(models.Model):
     def save(self, *args, **kwargs):
        self.clean()  # Esegue la pulizia (e il controllo) prima di salvare
        super().save(*args, **kwargs)
+    
+    class Meta:
+        verbose_name = "Recensione"
+        verbose_name_plural = "Recensioni"
 
 
 
@@ -131,7 +140,7 @@ class RoomBooking(models.Model):
     end_date = models.DateField()
     numero_telefono = models.CharField(max_length=15)
     email = models.EmailField()
-    note = models.TextField(blank=True, null=True)
+    note = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

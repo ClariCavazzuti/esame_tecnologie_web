@@ -28,9 +28,8 @@ class RoomBookingForm(forms.ModelForm):
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
 
-        if start_date and end_date:
-            if start_date >= end_date:
-                raise forms.ValidationError("La data di fine deve essere successiva alla data di inizio.")
+        if start_date and end_date and start_date >= end_date:
+            raise forms.ValidationError("La data di fine deve essere successiva alla data di inizio.")
 
         return cleaned_data
 
@@ -46,5 +45,4 @@ class TavoloBookingForm(forms.ModelForm):
 class RecensioneForm(forms.ModelForm):
     class Meta:
         model = Recensione
-        exclude = ['user']
         fields = ['voto', 'commento', 'immagine', 'categoria', 'data']
