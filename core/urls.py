@@ -17,4 +17,5 @@ urlpatterns = [
     path('elimina_prenotazione_camera/<int:prenotazione_id>/', views.elimina_prenotazione_camera, name='elimina_prenotazione_camera'),
     path('elimina_prenotazione_tavolo/<int:prenotazione_id>/', views.elimina_prenotazione_tavolo, name='elimina_prenotazione_tavolo'),
     path('elimina-recensione/<int:recensione_id>/', views.elimina_recensione, name='elimina_recensione'),
+   
 ]

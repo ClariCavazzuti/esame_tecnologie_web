@@ -55,15 +55,14 @@ def aggiungi_recensione(request):
     if request.method == 'POST':
         form = RecensioneForm(request.POST, request.FILES)
         if form.is_valid():
-            recensione = form.save(commit=False) #creo la recensione senza salvarla 
+            recensione = form.save(commit=False)
             recensione.user = request.user
-            #recensione.clean()
             recensione.save()
-            return redirect('core_home')
-    
+            return JsonResponse({'success': True, 'message': 'Recensione caricata con successo!'}, status=200)
+        else:
+            return JsonResponse({'success': False, 'message': 'Errore nel caricamento della recensione. Controlla i dati inseriti.'}, status=400)
     else:
         form = RecensioneForm()
-    
     return render(request, 'core/aggiungi_recensione.html', {'form': form})
 
 
@@ -241,4 +240,5 @@ def prenotazione_tavolo(request):
     else:
         form = TavoloBookingForm()
     return render(request, 'core/prenotazione_tavolo.html', {'form': form})
+
 
