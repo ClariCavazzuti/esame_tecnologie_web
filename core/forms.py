@@ -1,6 +1,9 @@
 from typing import Any
 from django import forms
 from .models import RoomBooking, TavoloBooking, Recensione
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+
 
 class RoomSearchForm(forms.Form):
     """
@@ -13,7 +16,7 @@ class RoomSearchForm(forms.Form):
 class RoomBookingForm(forms.ModelForm):
     class Meta:
         model = RoomBooking
-        fields = ['start_date', 'end_date', 'numero_telefono', 'email', 'note']
+        fields = ['start_date', 'end_date', 'numero_telefono', 'note']
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),
             'end_date': forms.DateInput(attrs={'type': 'date'}),
@@ -36,7 +39,7 @@ class RoomBookingForm(forms.ModelForm):
 class TavoloBookingForm(forms.ModelForm):
     class Meta:
         model = TavoloBooking
-        fields = ['data', 'orario_arrivo', 'tipo_pasto', 'numero_persone', 'numero_telefono', 'email', 'note']
+        fields = ['data', 'orario_arrivo', 'tipo_pasto', 'numero_persone', 'numero_telefono', 'note']
         widgets = {
             'data': forms.DateInput(attrs={'type': 'date'}),
             'orario_arrivo': forms.TimeInput(format='%H:%M', attrs={'type': 'time'}),
@@ -46,3 +49,21 @@ class RecensioneForm(forms.ModelForm):
     class Meta:
         model = Recensione
         fields = ['voto', 'commento', 'immagine', 'categoria', 'data']
+        widgets = {
+            'data': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True, help_text="Obbligatorio. Inserisci un indirizzo email valido.")
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "password1", "password2")
+
+    def save(self, commit=True):
+        user = super(CustomUserCreationForm, self).save(commit=False)
+        user.email = self.cleaned_data["email"]
+        if commit:
+            user.save()
+        return user

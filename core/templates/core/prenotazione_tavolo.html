@@ -41,6 +41,7 @@
         <form method="post">
             {% csrf_token %}
             <p><strong>Nome:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Conferma Prenotazione</button>
         </form>

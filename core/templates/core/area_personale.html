@@ -6,33 +6,86 @@
     <title>Area Personale</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
+      body {
+        background-color: #f8f9fa;
+      }
+
       .section-title {
         margin-top: 40px;
         margin-bottom: 20px;
-        font-size: 1.5rem;
+        font-size: 1.75rem;
+        font-weight: bold;
+        text-align: center;
+        color: #343a40;
       }
+
       .card {
         margin-bottom: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 400px; /* Altezza minima per uniformare le carte */
       }
+
+      .card img {
+        height: 200px; /* Altezza fissa per le immagini */
+        object-fit: cover; /* Adatta l'immagine senza distorsioni */
+      }
+
+      .card-body {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #007bff;
+        text-align: center;
+      }
+
+      .card-text {
+        font-size: 1rem;
+        color: #495057;
+        margin-bottom: 10px;
+      }
+
+      .card-footer {
+        text-align: center;
+        background-color: #f8f9fa;
+        border-top: none;
+        padding: 10px;
+      }
+
+      .star-rating {
+        color: gold;
+        font-size: 1.2rem;
+        text-align: center;
+        margin-bottom: 15px;
+      }
+
       .delete-btn {
         background-color: #dc3545;
         color: white;
+        width: 100%;
+        border-radius: 15px;
+        transition: background-color 0.3s ease;
       }
-      .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
+
+      .delete-btn:hover {
+        background-color: #c82333;
       }
-      .btn-secondary {
-        background-color: #6c757d;
-        border-color: #6c757d;
-        color: white;
+
+      /* Uniforma l'altezza minima delle carte per le recensioni */
+      .recensione-card {
+        min-height: 400px;
       }
-      .alert-dismissible .btn-close {
-        position: absolute;
-        top: 0;
-        right: 0;
-        padding: 1.25rem 1rem;
-      }
+
     </style>
   </head>
   <body>
@@ -65,9 +118,11 @@
               <img src="{{ prenotazione.camera.immagine1.url }}" class="card-img-top" alt="Immagine camera">
               <div class="card-body">
                 <h5 class="card-title">{{ prenotazione.camera.nome }}</h5>
-                <p class="card-text">Data: {{ prenotazione.data_inizio }} - {{ prenotazione.data_fine }}</p>
+                <p class="card-text">Periodo: {{ prenotazione.start_date|date:"d/m/Y" }} - {{ prenotazione.end_date|date:"d/m/Y" }}</p>
                 <p class="card-text">Numero di posti letto: {{ prenotazione.camera.numero_posti_letto }}</p>
                 <p class="card-text">Prezzo per notte: €{{ prenotazione.camera.prezzo_per_notte }}</p>
+              </div>
+              <div class="card-footer">
                 <form method="POST" action="{% url 'elimina_prenotazione_camera' prenotazione.id %}">
                   {% csrf_token %}
                   <button type="submit" class="btn delete-btn" onclick="return confirm('Sei sicuro di voler eliminare questa prenotazione?');">Elimina</button>
@@ -87,7 +142,10 @@
               <div class="card-body">
                 <h5 class="card-title">Tavolo Numero {{ prenotazione.tavolo.numero }}</h5>
                 <p class="card-text">Numero di posti: {{ prenotazione.tavolo.posti }}</p>
-                <p class="card-text">Data: {{ prenotazione.data }}</p>
+                <p class="card-text">Data: {{ prenotazione.data|date:"d/m/Y" }}</p>
+                <p class="card-text">Ora: {{ prenotazione.orario_arrivo|date:"H:i" }}</p>
+              </div>
+              <div class="card-footer">
                 <form method="POST" action="{% url 'elimina_prenotazione_tavolo' prenotazione.id %}">
                   {% csrf_token %}
                   <button type="submit" class="btn delete-btn" onclick="return confirm('Sei sicuro di voler eliminare questa prenotazione?');">Elimina</button>
@@ -103,15 +161,23 @@
       <div class="row">
         {% for recensione in recensioni %}
           <div class="col-md-4">
-            <div class="card">
+            <div class="card recensione-card">
               {% if recensione.immagine %}
                 <img src="{{ recensione.immagine.url }}" class="card-img-top" alt="Immagine recensione">
               {% endif %}
               <div class="card-body">
                 <h5 class="card-title">Recensione di {{ recensione.categoria|capfirst }}</h5>
-                <p class="card-text">Voto: {{ recensione.voto }}</p>
+                <div class="star-rating">
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= recensione.voto %}
+                      <span>&#9733;</span>
+                    {% endif %}
+                  {% endfor %}
+                </div>
                 <p class="card-text">Commento: {{ recensione.commento }}</p>
-                <p class="card-text">Data: {{ recensione.data }}</p>
+              </div>
+              <div class="card-footer">
+                <p class="card-text">Data: {{ recensione.data|date:"d/m/Y" }}</p>
                 <form method="POST" action="{% url 'elimina_recensione' recensione.id %}" onsubmit="return confirm('Sei sicuro di voler eliminare questa recensione?');">
                   {% csrf_token %}
                   <button type="submit" class="btn delete-btn">Elimina</button>
