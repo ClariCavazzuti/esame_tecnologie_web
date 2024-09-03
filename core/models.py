@@ -143,6 +143,11 @@ class RoomBooking(models.Model):
     note = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def notti_soggiorno(self):
+        return (self.end_date - self.start_date).days
+    
+
     def __str__(self):
         return f"Prenotazione di {self.user.username} per {self.camera.get_tipo_display()}"
 

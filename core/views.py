@@ -98,7 +98,8 @@ def book_room(request, camera_id):
     return render(request, 'core/book_room.html', {'camera': camera, 'form' : form})
 
 def booking_success(request):
-    return render(request, 'core/booking_success.html')
+    last_booking = RoomBooking.objects.filter(user=request.user).order_by('-created_at').first()
+    return render(request, 'core/booking_success.html', {'booking': last_booking})
 
 @login_required
 def area_personale(request):

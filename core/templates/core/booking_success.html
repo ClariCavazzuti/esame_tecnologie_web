@@ -4,12 +4,85 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Conferma Prenotazione</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7f7f7;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        margin-top: 50px;
+      }
+      .booking-summary {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .booking-summary h2 {
+        color: #007bff;
+      }
+      .booking-summary p {
+        font-size: 16px;
+        margin: 5px 0;
+      }
+      .btn-home, .btn-print {
+        display: block;
+        width: 200px;
+        margin: 20px auto 0;
+      }
+      .hotel-info {
+        text-align: center;
+        margin-bottom: 30px;
+        font-style: italic;
+        font-size: 18px;
+      }
+      .hotel-name {
+        font-family: 'Georgia', serif;
+        font-size: 32px;
+        font-weight: bold;
+        color: #007bff;
+      }
+      @media print {
+        .btn-home, .btn-print {
+          display: none;
+        }
+      }
+    </style>
   </head>
   <body>
-    {% block content %}
-    <h2>Prenotazione completata</h2>
-    <p>Grazie per aver prenotato con noi! Ti aspettiamo.</p>
-    <a href="{% url 'core_home' %}" class="btn btn-primary">Torna alla Home</a>
-    {% endblock %}
+    <div class="container">
+      <div class="hotel-info">
+        <div class="hotel-name">Kristall</div>
+        <p>Via delle Alpi, 123, 16010 Montagna</p>
+        <p>+39 012 345 6789</p>
+        <p>info@kristallristorante.it</p>
+      </div>
+
+      <div class="booking-summary">
+        <h2>Prenotazione completata</h2>
+        <p>Grazie per aver prenotato con noi! Ti aspettiamo.</p>
+
+        {% if booking %}
+          <h4>Riepilogo della Prenotazione</h4>
+          <p><strong>Camera:</strong> {{ booking.camera.nome }} - {{ booking.camera.get_tipo_display }} - {{ booking.camera.numero_posti_letto }} posti letto</p>
+          <p><strong>Check-in:</strong> {{ booking.start_date }}</p>
+          <p><strong>Check-out:</strong> {{ booking.end_date }}</p>
+          <p><strong>Numero di Telefono:</strong> {{ booking.numero_telefono }}</p>
+          <p><strong>Email:</strong> {{ booking.email }}</p>
+          {% if booking.note %}
+            <p><strong>Note:</strong> {{ booking.note }}</p>
+          {% endif %}
+          <p><strong>Prezzo per notte:</strong> €{{ booking.camera.prezzo_per_notte|floatformat:2 }}</p>
+        {% else %}
+          <p>Nessuna prenotazione trovata.</p>
+        {% endif %}
+
+        <a href="{% url 'core_home' %}" class="btn btn-primary btn-home">Torna alla Home</a>
+        <button class="btn btn-secondary btn-print" onclick="window.print()">Stampa</button>
+      </div>
+    </div>
   </body>
 </html>

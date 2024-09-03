@@ -190,8 +190,8 @@
     <!-- Font Awesome per le icone -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
-        // Intervallo di controllo in millisecondi (es. 1 minuto)
-        const CHECK_INTERVAL = 60000; 
+        // Intervallo di controllo in millisecondi 
+        const CHECK_INTERVAL = 900000; 
     
         function checkSession() {
             fetch("{% url 'check_session' %}")
