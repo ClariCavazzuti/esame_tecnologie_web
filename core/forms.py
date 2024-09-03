@@ -3,7 +3,7 @@ from django import forms
 from .models import RoomBooking, TavoloBooking, Recensione
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-
+from datetime import time
 
 class RoomSearchForm(forms.Form):
     """
@@ -36,14 +36,45 @@ class RoomBookingForm(forms.ModelForm):
 
         return cleaned_data
 
+
 class TavoloBookingForm(forms.ModelForm):
+    
+    # Definire le opzioni di orario (dalle 12:00 alle 15:00 e dalle 19:30 alle 22:00)
+    ORARI_DISPONIBILI = [
+        ('12:00', '12:00'),
+        ('12:30', '12:30'),
+        ('13:00', '13:00'),
+        ('13:30', '13:30'),
+        ('14:00', '14:00'),
+        ('14:30', '14:30'),
+        ('15:00', '15:00'),
+        ('19:30', '19:30'),
+        ('20:00', '20:00'),
+        ('20:30', '20:30'),
+        ('21:00', '21:00'),
+        ('21:30', '21:30'),
+        ('22:00', '22:00'),
+    ]
+    
+    orario_arrivo = forms.ChoiceField(choices=ORARI_DISPONIBILI)
+    
     class Meta:
         model = TavoloBooking
         fields = ['data', 'orario_arrivo', 'tipo_pasto', 'numero_persone', 'numero_telefono', 'note']
         widgets = {
             'data': forms.DateInput(attrs={'type': 'date'}),
-            'orario_arrivo': forms.TimeInput(format='%H:%M', attrs={'type': 'time'}),
         }
+
+    def clean_orario_arrivo(self):
+        orario = self.cleaned_data['orario_arrivo']
+        orario_time = time.fromisoformat(orario)
+        
+        # Controlla se l'orario è nelle fasce orarie desiderate
+        if not ((time(12, 0) <= orario_time <= time(15, 0)) or (time(19, 30) <= orario_time <= time(22, 0))):
+            raise forms.ValidationError("L'orario di arrivo deve essere tra le 12:00 e le 15:00 o tra le 19:30 e le 22:00.")
+        
+        return orario
+
 
 class RecensioneForm(forms.ModelForm):
     class Meta:

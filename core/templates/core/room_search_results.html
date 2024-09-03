@@ -40,13 +40,6 @@
     <div class="container mt-5">
         <h1 class="mb-4">Risultati della Ricerca Camere</h1>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
 
         <form method="POST" action="{% url 'confirm_booking' %}">
             {% csrf_token %}

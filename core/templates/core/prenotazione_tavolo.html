@@ -6,7 +6,53 @@
     <title>Prenotazione Tavolo</title>
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    
+    <style>
+        /* Centra e rende elegante il contenuto della pagina */
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 600px;
+            background-color: white;
+            padding: 30px;
+            margin-top: 50px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #343a40;
+        }
+
+        .info-text {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            text-align: center;
+        }
+
+        .info-text strong {
+            color: #dc3545;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* Stile personalizzato per il dropdown */
+        select.form-control {
+            font-size: 1.1rem;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -36,14 +82,21 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="container mt-5">
+    <div class="container">
         {% block content %}
         <h2>Prenota un Tavolo</h2>
-        <form method="post">
+
+        <div class="info-text">
+            <p><strong>Attenzione:</strong> I tavoli prenotabili arrivano fino ad un massimo di <strong>8 posti</strong>. Per prenotazioni superiori, si prega di contattarci telefonicamente al <strong>+39 012 345 6789</strong> o via email a <strong>info@kristallristorante.it</strong>.</p>
+        </div>
+
+        <form id="reservationForm" method="post">
             {% csrf_token %}
             <p><strong>Nome:</strong> {{ user.username }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
+
             {{ form.as_p }}
+
             <button type="submit" class="btn btn-primary">Conferma Prenotazione</button>
         </form>
         {% endblock %}
@@ -54,10 +107,35 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <!-- Custom Script for Form Submission -->
+    <!-- Custom Script to Limit Time Selection -->
     <script>
-        document.querySelector('form').addEventListener('submit', function(event) {
-            event.preventDefault();  // Previene l'invio standard del form
+        document.addEventListener('DOMContentLoaded', function() {
+            const timeField = document.querySelector('select[name="timeFieldName"]'); // Sostituisci "timeFieldName" con il nome del campo orario
+
+            // Svuota il campo orario e aggiungi solo gli orari disponibili
+            const availableTimes = [
+                "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", // Orari per il pranzo
+                "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"  // Orari per la cena
+            ];
+
+            // Rimuovi tutte le opzioni esistenti
+            while (timeField.options.length > 0) {
+                timeField.remove(0);
+            }
+
+            // Aggiungi le opzioni limitate al campo orario
+            availableTimes.forEach(time => {
+                const option = document.createElement('option');
+                option.value = time;
+                option.text = time;
+                timeField.add(option);
+            });
+        });
+
+        // Gestione della conferma e della risposta JSON per la prenotazione
+        document.querySelector('#reservationForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Previene l'invio standard del form
+
             if (confirm("Confermi la prenotazione del tavolo?")) {
                 // Invia il form tramite una richiesta AJAX
                 fetch(this.action, {
