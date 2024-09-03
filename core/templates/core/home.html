@@ -190,7 +190,6 @@
     <!-- Font Awesome per le icone -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
-        // Intervallo di controllo in millisecondi 
         const CHECK_INTERVAL = 900000; 
     
         function checkSession() {
@@ -198,18 +197,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (!data.is_active) {
-                        // Reindirizza alla pagina di logout inattivo
                         window.location.href = "{% url 'inactive_logout' %}";
                     }
                 })
                 .catch(error => {
                     console.error("Errore nel controllo della sessione:", error);
-                    // In caso di errore, si può decidere di reindirizzare comunque
                     window.location.href = "{% url 'inactive_logout' %}";
                 });
         }
     
-        // Imposta un controllo della sessione periodico
         setInterval(checkSession, CHECK_INTERVAL);
     
     </script>

@@ -52,9 +52,8 @@
     <!-- Custom Script for Form Submission -->
     <script>
         document.querySelector('#recensioneForm').addEventListener('submit', function(event) {
-            event.preventDefault();  // Previene l'invio standard del form
+            event.preventDefault(); 
             if (confirm("Confermi l'invio della recensione?")) {
-                // Invia il form tramite una richiesta AJAX
                 fetch(this.action, {
                     method: 'POST',
                     body: new FormData(this),
@@ -66,7 +65,6 @@
                 .then(data => {
                     if (data.success) {
                         alert("Kristall dice: Recensione caricata con successo!");
-                        // Reindirizza alla homepage
                         window.location.href = "{% url 'core_home' %}";
                     } else {
                         alert("Kristall dice: Errore nel caricamento della recensione: " + data.message);

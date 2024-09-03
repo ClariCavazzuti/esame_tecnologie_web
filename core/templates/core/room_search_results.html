@@ -86,7 +86,7 @@
 
     <script>
         document.getElementById('bookingForm').addEventListener('submit', function(event) {
-            event.preventDefault();  // Previene l'invio standard del form
+            event.preventDefault();
             if (confirm("Confermi la prenotazione della camera?")) {
                 // Se confermato, invia il form
                 this.submit();

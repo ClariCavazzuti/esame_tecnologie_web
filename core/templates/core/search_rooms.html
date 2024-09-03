@@ -115,11 +115,10 @@
     <!-- Custom Script for Form Validation -->
     <script>
         document.getElementById('booking-form').addEventListener('submit', function(event) {
-            // Supponiamo che ci sia un campo chiamato 'posti_letto' nel form che rappresenta il numero di posti letto selezionati
-            const postiLetto = parseInt(document.getElementById('id_posti_letto').value); // Sostituisci 'id_posti_letto' con l'id reale del campo
+            const postiLetto = parseInt(document.getElementById('id_posti_letto').value);
             if (postiLetto > 4) {
-                event.preventDefault(); // Impedisce l'invio del form
-                document.getElementById('error-message').style.display = 'block'; // Mostra il messaggio di errore
+                event.preventDefault(); 
+                document.getElementById('error-message').style.display = 'block'; 
             }
         });
     </script>

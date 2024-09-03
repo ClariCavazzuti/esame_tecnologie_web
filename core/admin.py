@@ -1,7 +1,6 @@
 from django.contrib import admin
-from .models import Camera, RoomBooking, MenuItem, Recensione, Tavolo, Core, TavoloBooking
-from datetime import datetime, timedelta
-from django.db.models import Count  # Import corretto
+from .models import Camera, RoomBooking, MenuItem, Recensione, Tavolo, TavoloBooking
+from django.db.models import Count 
 
 
 class CameraAdmin(admin.ModelAdmin):
@@ -19,7 +18,6 @@ class CameraAdmin(admin.ModelAdmin):
         camere_disponibili = obj.camere_totali
 
         for prenotazione in prenotazioni:
-            # Controlla quante camere sono prenotate nello stesso periodo
             prenotazioni_conflittuali = RoomBooking.objects.filter(
                 camera=obj,
                 start_date__lt=prenotazione.end_date,
@@ -61,12 +59,12 @@ class RecensioneAdmin(admin.ModelAdmin):
     list_display = ('user', 'voto', 'created_at')
     list_filter = ('voto', 'created_at')
     search_fields = ('user__username', 'commento')
-    ordering = ['-created_at']  # Ordina per data decrescente come predefinito
-    sortable_by = ('voto', 'created_at')  # Permette l'ordinamento per voto o data
+    ordering = ['-created_at'] 
+    sortable_by = ('voto', 'created_at') 
 
 @admin.register(Tavolo)
 class TavoloAdmin(admin.ModelAdmin):
-    list_display = ('numero', 'posti')  # Rimuovi 'disponibile'
+    list_display = ('numero', 'posti') 
     list_filter = ('numero',)
 
     
@@ -75,7 +73,7 @@ class TavoloBookingAdmin(admin.ModelAdmin):
     list_display = ('user', 'tavolo', 'data', 'orario_arrivo', 'tipo_pasto', 'numero_telefono', 'email', 'note')
     list_filter = ('data', 'tipo_pasto')
     search_fields = ('user__username', 'tavolo__numero', 'note', 'email')
-    ordering = ['data']  # Ordina per data in modo crescente
+    ordering = ['data']  
 
 
 

@@ -116,12 +116,11 @@
     <!-- Custom Script to Limit Time Selection -->
     <script>
         document.querySelector('#reservationForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Previene l'invio standard del form
+            event.preventDefault(); 
     
             const orarioArrivo = document.querySelector('#id_orario_arrivo').value;
             const tipoPasto = document.querySelector('#id_tipo_pasto').value;
     
-            // Converti l'orario in un oggetto Date per facilitare i confronti
             const [hours, minutes] = orarioArrivo.split(':').map(Number);
             const selectedTime = new Date();
             selectedTime.setHours(hours, minutes);
@@ -141,7 +140,6 @@
             let valid = true;
             let errorMessage = "";
     
-            // Validazione dell'orario rispetto al tipo di pasto
             if (selectedTime >= startLunch && selectedTime <= endLunch && tipoPasto !== 'pranzo') {
                 valid = false;
                 errorMessage = "Seleziona 'Pranzo' per l'orario compreso tra le 12:00 e le 15:00.";
@@ -153,7 +151,6 @@
             if (!valid) {
                 alert(errorMessage);
             } else if (confirm("Confermi la prenotazione del tavolo?")) {
-                // Invia il form tramite una richiesta AJAX
                 fetch(this.action, {
                     method: 'POST',
                     body: new FormData(this),
@@ -165,7 +162,6 @@
                 .then(data => {
                     if (data.success) {
                         alert("Tavolo prenotato con successo!");
-                        // Reindirizza alla homepage
                         window.location.href = "{% url 'core_home' %}";
                     } else {
                         alert("Errore nella prenotazione del tavolo: " + data.message);

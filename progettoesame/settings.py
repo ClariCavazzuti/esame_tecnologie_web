@@ -47,13 +47,13 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = "/core/?login=ok"
 
-# Imposta la durata della sessione a 15 minuti (900 secondi)
+
 SESSION_COOKIE_AGE = 900
 
-# Termina la sessione al termine della sessione corrente
+
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-# Salva la sessione ad ogni richiesta per mantenere la sessione attiva
+
 SESSION_SAVE_EVERY_REQUEST = True
 
 MIDDLEWARE = [

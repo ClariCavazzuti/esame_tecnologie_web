@@ -15,7 +15,4 @@ def inactive_logout(request):
 
 
 def check_session():
-    """
-    Verifica se la sessione è ancora attiva.
-    """
     return JsonResponse({'is_active': True})

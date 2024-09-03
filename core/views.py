@@ -3,12 +3,11 @@ from django.contrib.auth.decorators import login_required
 from .models import MenuItem, Camera, RoomBooking, TavoloBooking, Tavolo, Recensione
 from .forms import RoomSearchForm, RoomBookingForm, TavoloBookingForm, RecensioneForm
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from django.contrib import messages 
-from django.core.exceptions import ValidationError
 
-# Funzione di utilità per verificare la disponibilità delle camere
+
+
 def check_availability(camera, start_date, end_date):
     bookings = RoomBooking.objects.filter(
         camera=camera,
@@ -17,8 +16,12 @@ def check_availability(camera, start_date, end_date):
     )
     return bookings.count() < camera.camere_totali
 
+
+
 def core(request):
     return render(request, 'core/home.html')
+
+
 
 def menu(request):
     menu_items = {
@@ -30,6 +33,7 @@ def menu(request):
         'bevande': MenuItem.objects.filter(categoria='bevande'),
     }
     return render(request, 'core/pagina-menu.html', {'menu_items': menu_items})
+
 
 
 def recensione(request):
@@ -50,6 +54,8 @@ def recensione(request):
     
     return render(request, 'core/recensioni.html', context)
 
+
+
 @login_required
 def aggiungi_recensione(request):
     if request.method == 'POST':
@@ -66,12 +72,54 @@ def aggiungi_recensione(request):
     return render(request, 'core/aggiungi_recensione.html', {'form': form})
 
 
+
+@login_required
+def elimina_recensione(request, recensione_id):
+    recensione = get_object_or_404(Recensione, id=recensione_id, user=request.user)
+    recensione.delete()
+    messages.success(request, 'Recensione eliminata con successo')
+    return redirect('area_personale')
+
+
+
+
 def camere(request):
     camere = Camera.objects.all()
     return render(request, 'core/pagina-camere.html', {'camere': camere})
 
-def tavoli(request):
-    return render(request,'core/tavoli.html')
+
+
+def search_rooms(request):
+    if request.method == 'POST':
+        form = RoomSearchForm(request.POST)
+        if form.is_valid():
+            check_in_date = form.cleaned_data['check_in_date']
+            check_out_date = form.cleaned_data['check_out_date']
+            posti_letto = form.cleaned_data['posti_letto']
+
+            # Filtra le camere in base ai posti letto
+            available_rooms = Camera.objects.filter(
+                numero_posti_letto__gte=posti_letto
+            )
+
+        
+            available_rooms = [camera for camera in available_rooms if check_availability(camera, check_in_date, check_out_date)]
+
+            if not available_rooms:
+                messages.error(request, 'Nessuna camera disponibile per le date e il numero di posti letto selezionati.')
+            else:
+                
+                return render(request, 'core/room_search_results.html', {
+                    'available_rooms': available_rooms,
+                    'check_in_date': check_in_date,
+                    'check_out_date': check_out_date,
+                })
+
+    else:
+        form = RoomSearchForm()
+    return render(request, 'core/search_rooms.html', {'form': form})
+
+
 
 
 @login_required
@@ -97,54 +145,7 @@ def book_room(request, camera_id):
         form = RoomBookingForm()
     return render(request, 'core/book_room.html', {'camera': camera, 'form' : form})
 
-def booking_success(request):
-    last_booking = RoomBooking.objects.filter(user=request.user).order_by('-created_at').first()
-    return render(request, 'core/booking_success.html', {'booking': last_booking})
 
-@login_required
-def area_personale(request):
-    # Recupera le prenotazioni camere, tavoli e recensioni dell'utente
-    prenotazioni_camere = RoomBooking.objects.filter(user=request.user)
-    prenotazioni_tavoli = TavoloBooking.objects.filter(user=request.user)
-    recensioni = Recensione.objects.filter(user=request.user)
-
-    context = {
-        'prenotazioni_camere': prenotazioni_camere,
-        'prenotazioni_tavoli': prenotazioni_tavoli,
-        'recensioni': recensioni,
-    }
-    
-    return render(request, 'core/area_personale.html', context)
-
-def search_rooms(request):
-    if request.method == 'POST':
-        form = RoomSearchForm(request.POST)
-        if form.is_valid():
-            check_in_date = form.cleaned_data['check_in_date']
-            check_out_date = form.cleaned_data['check_out_date']
-            posti_letto = form.cleaned_data['posti_letto']
-
-            # Filtra le camere in base ai posti letto
-            available_rooms = Camera.objects.filter(
-                numero_posti_letto__gte=posti_letto
-            )
-
-            # Filtra ulteriormente per disponibilità
-            available_rooms = [camera for camera in available_rooms if check_availability(camera, check_in_date, check_out_date)]
-
-            if not available_rooms:
-                messages.error(request, 'Nessuna camera disponibile per le date e il numero di posti letto selezionati.')
-            else:
-                # Passa le date come parametri alla prossima view
-                return render(request, 'core/room_search_results.html', {
-                    'available_rooms': available_rooms,
-                    'check_in_date': check_in_date,
-                    'check_out_date': check_out_date,
-                })
-
-    else:
-        form = RoomSearchForm()
-    return render(request, 'core/search_rooms.html', {'form': form})
 
 @login_required
 def confirm_booking(request):
@@ -155,7 +156,7 @@ def confirm_booking(request):
         numero_telefono = request.POST.get('numero_telefono')
         note = request.POST.get('note')
 
-        # Converte le stringhe delle date in oggetti datetime.date
+        
         try:
             check_in_date = datetime.strptime(check_in_date, '%Y-%m-%d').date()
             check_out_date = datetime.strptime(check_out_date, '%Y-%m-%d').date()
@@ -167,7 +168,7 @@ def confirm_booking(request):
             messages.error(request, 'Seleziona almeno una camera per procedere con la prenotazione.')
             return redirect('search_rooms')
 
-        # Effettua la prenotazione per ogni camera selezionata
+        
         for room_id in selected_room_ids:
             camera = get_object_or_404(Camera, id=room_id)
             if check_availability(camera, check_in_date, check_out_date):
@@ -189,6 +190,15 @@ def confirm_booking(request):
     return redirect('search_rooms')
 
 
+
+
+def booking_success(request):
+    last_booking = RoomBooking.objects.filter(user=request.user).order_by('-created_at').first()
+    return render(request, 'core/booking_success.html', {'booking': last_booking})
+
+
+
+
 @login_required
 def elimina_prenotazione_camera(request, prenotazione_id):
     prenotazione = get_object_or_404(RoomBooking, id=prenotazione_id, user=request.user)
@@ -197,20 +207,12 @@ def elimina_prenotazione_camera(request, prenotazione_id):
     messages.success(request, f"La prenotazione della camera {camera.nome} è stata eliminata con successo.")
     return redirect('area_personale')
 
-@login_required
-def elimina_prenotazione_tavolo(request, prenotazione_id):
-    prenotazione = get_object_or_404(TavoloBooking, id=prenotazione_id, user=request.user)
-    tavolo = prenotazione.tavolo
-    prenotazione.delete()
-    messages.success(request, f"La prenotazione del tavolo numero {tavolo.numero} è stata eliminata con successo.")
-    return redirect('area_personale')
 
-@login_required
-def elimina_recensione(request, recensione_id):
-    recensione = get_object_or_404(Recensione, id=recensione_id, user=request.user)
-    recensione.delete()
-    messages.success(request, 'Recensione eliminata con successo')
-    return redirect('area_personale')
+
+def tavoli(request):
+    return render(request,'core/tavoli.html')
+
+
 
 @login_required
 def prenotazione_tavolo(request):
@@ -241,5 +243,37 @@ def prenotazione_tavolo(request):
     else:
         form = TavoloBookingForm()
     return render(request, 'core/prenotazione_tavolo.html', {'form': form})
+
+
+
+@login_required
+def elimina_prenotazione_tavolo(request, prenotazione_id):
+    prenotazione = get_object_or_404(TavoloBooking, id=prenotazione_id, user=request.user)
+    tavolo = prenotazione.tavolo
+    prenotazione.delete()
+    messages.success(request, f"La prenotazione del tavolo numero {tavolo.numero} è stata eliminata con successo.")
+    return redirect('area_personale')
+
+
+
+
+@login_required
+def area_personale(request):
+    # Recupera le prenotazioni camere, tavoli e recensioni dell'utente
+    prenotazioni_camere = RoomBooking.objects.filter(user=request.user)
+    prenotazioni_tavoli = TavoloBooking.objects.filter(user=request.user)
+    recensioni = Recensione.objects.filter(user=request.user)
+
+    context = {
+        'prenotazioni_camere': prenotazioni_camere,
+        'prenotazioni_tavoli': prenotazioni_tavoli,
+        'recensioni': recensioni,
+    }
+    
+    return render(request, 'core/area_personale.html', context)
+
+
+
+
 
 
