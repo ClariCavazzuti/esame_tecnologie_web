@@ -6,7 +6,6 @@
     <title>Risultati della Ricerca Camere</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    
 </head>
 <body>
 
@@ -40,13 +39,11 @@
     <div class="container mt-5">
         <h1 class="mb-4">Risultati della Ricerca Camere</h1>
 
-
-        <form method="POST" action="{% url 'confirm_booking' %}">
+        <form id="bookingForm" method="POST" action="{% url 'confirm_booking' %}">
             {% csrf_token %}
-            <!-- Convertiamo le date nel formato YYYY-MM-DD -->
             <input type="hidden" name="check_in_date" value="{{ check_in_date|date:'Y-m-d' }}">
             <input type="hidden" name="check_out_date" value="{{ check_out_date|date:'Y-m-d' }}">
-            <h3> Le seguenti camere sono disponibili, seleziona quella che preferisci</h3> 
+            <h3>Le seguenti camere sono disponibili, seleziona quella che preferisci</h3> 
             {% if available_rooms %}
                 <ul class="list-group mb-4">
                     {% for camera in available_rooms %}
@@ -63,14 +60,12 @@
                     <input type="text" class="form-control" name="numero_telefono" id="numero_telefono" required>
                 </div>
 
-                
                 <div class="form-group">
                     <label for="note">Note:</label>
                     <textarea class="form-control" name="note" id="note" rows="3"></textarea>
                 </div>
 
-                
-                    <button type="submit" class="btn btn-primary">Conferma Prenotazione</button>
+                <button type="submit" class="btn btn-primary">Conferma Prenotazione</button>
                 {% else %}
                     <p>
                         <a href="{% url 'login' %}" class="link-underline-dark">Per prenotare è necessario accedere al proprio account, premi qui per accedere</a>
@@ -88,5 +83,15 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById('bookingForm').addEventListener('submit', function(event) {
+            event.preventDefault();  // Previene l'invio standard del form
+            if (confirm("Confermi la prenotazione della camera?")) {
+                // Se confermato, invia il form
+                this.submit();
+            }
+        });
+    </script>
 </body>
 </html>
