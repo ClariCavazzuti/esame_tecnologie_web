@@ -95,6 +95,12 @@
             <p><strong>Nome:</strong> {{ user.username }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
 
+            {% if form.non_field_errors %}
+                 <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
             {{ form.as_p }}
 
             <button type="submit" class="btn btn-primary">Conferma Prenotazione</button>
@@ -109,12 +115,44 @@
 
     <!-- Custom Script to Limit Time Selection -->
     <script>
-   
-        // Gestione della conferma e della risposta JSON per la prenotazione
         document.querySelector('#reservationForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Previene l'invio standard del form
-
-            if (confirm("Confermi la prenotazione del tavolo?")) {
+    
+            const orarioArrivo = document.querySelector('#id_orario_arrivo').value;
+            const tipoPasto = document.querySelector('#id_tipo_pasto').value;
+    
+            // Converti l'orario in un oggetto Date per facilitare i confronti
+            const [hours, minutes] = orarioArrivo.split(':').map(Number);
+            const selectedTime = new Date();
+            selectedTime.setHours(hours, minutes);
+    
+            const startLunch = new Date();
+            startLunch.setHours(12, 0);
+    
+            const endLunch = new Date();
+            endLunch.setHours(15, 0);
+    
+            const startDinner = new Date();
+            startDinner.setHours(19, 30);
+    
+            const endDinner = new Date();
+            endDinner.setHours(22, 0);
+    
+            let valid = true;
+            let errorMessage = "";
+    
+            // Validazione dell'orario rispetto al tipo di pasto
+            if (selectedTime >= startLunch && selectedTime <= endLunch && tipoPasto !== 'pranzo') {
+                valid = false;
+                errorMessage = "Seleziona 'Pranzo' per l'orario compreso tra le 12:00 e le 15:00.";
+            } else if (selectedTime >= startDinner && selectedTime <= endDinner && tipoPasto !== 'cena') {
+                valid = false;
+                errorMessage = "Seleziona 'Cena' per l'orario compreso tra le 19:30 e le 22:00.";
+            }
+    
+            if (!valid) {
+                alert(errorMessage);
+            } else if (confirm("Confermi la prenotazione del tavolo?")) {
                 // Invia il form tramite una richiesta AJAX
                 fetch(this.action, {
                     method: 'POST',

@@ -38,8 +38,6 @@ class RoomBookingForm(forms.ModelForm):
 
 
 class TavoloBookingForm(forms.ModelForm):
-    
-    # Definire le opzioni di orario (dalle 12:00 alle 15:00 e dalle 19:30 alle 22:00)
     ORARI_DISPONIBILI = [
         ('12:00', '12:00'),
         ('12:30', '12:30'),
@@ -65,15 +63,20 @@ class TavoloBookingForm(forms.ModelForm):
             'data': forms.DateInput(attrs={'type': 'date'}),
         }
 
-    def clean_orario_arrivo(self):
-        orario = self.cleaned_data['orario_arrivo']
-        orario_time = time.fromisoformat(orario)
+    def clean(self):
+        cleaned_data = super().clean()
+        orario = cleaned_data.get('orario_arrivo')
+        tipo_pasto = cleaned_data.get('tipo_pasto')
+
+        if orario and tipo_pasto:
+            orario_time = time.fromisoformat(orario)
+            
+            if time(12, 0) <= orario_time <= time(15, 0) and tipo_pasto != 'pranzo':
+                self.add_error('tipo_pasto', "Seleziona 'Pranzo' per l'orario compreso tra le 12:00 e le 15:00.")
+            elif time(19, 30) <= orario_time <= time(22, 0) and tipo_pasto != 'cena':
+                self.add_error('tipo_pasto', "Seleziona 'Cena' per l'orario compreso tra le 19:30 e le 22:00.")
         
-        # Controlla se l'orario è nelle fasce orarie desiderate
-        if not ((time(12, 0) <= orario_time <= time(15, 0)) or (time(19, 30) <= orario_time <= time(22, 0))):
-            raise forms.ValidationError("L'orario di arrivo deve essere tra le 12:00 e le 15:00 o tra le 19:30 e le 22:00.")
-        
-        return orario
+        return cleaned_data
 
 
 class RecensioneForm(forms.ModelForm):
