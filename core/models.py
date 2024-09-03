@@ -147,5 +147,6 @@ class RoomBooking(models.Model):
         return f"Prenotazione di {self.user.username} per {self.camera.get_tipo_display()}"
 
     class Meta:
-        verbose_name = "Prenotazione"
-        verbose_name_plural = "Prenotazioni"
+        verbose_name = "Prenotazione Camera"
+        verbose_name_plural = "Prenotazioni Camere"
+        ordering = ['start_date']

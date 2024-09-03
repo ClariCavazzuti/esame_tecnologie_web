@@ -3,6 +3,7 @@ from .models import Camera, RoomBooking, MenuItem, Recensione, Tavolo, Core, Tav
 from datetime import datetime, timedelta
 from django.db.models import Count  # Import corretto
 
+
 class CameraAdmin(admin.ModelAdmin):
     list_display = ('nome', 'tipo', 'camere_totali', 'riepilogo_prenotazioni')
     list_filter = ('tipo',)
@@ -10,12 +11,24 @@ class CameraAdmin(admin.ModelAdmin):
 
     def riepilogo_prenotazioni(self, obj):
         """
-        Mostra un riepilogo di tutte le camere prenotate (per tipo) e il periodo di tempo per cui sono prenotate.
+        Mostra un riepilogo delle camere prenotate, indicando quante camere sono prenotate in un dato periodo,
+        tenendo conto delle sovrapposizioni.
         """
-        prenotazioni = RoomBooking.objects.filter(camera=obj).values('start_date', 'end_date')
+        prenotazioni = RoomBooking.objects.filter(camera=obj).order_by('start_date')
         riepilogo = []
+        camere_disponibili = obj.camere_totali
+
         for prenotazione in prenotazioni:
-            riepilogo.append(f"{prenotazione['start_date']} - {prenotazione['end_date']}")
+            # Controlla quante camere sono prenotate nello stesso periodo
+            prenotazioni_conflittuali = RoomBooking.objects.filter(
+                camera=obj,
+                start_date__lt=prenotazione.end_date,
+                end_date__gt=prenotazione.start_date
+            ).count()
+
+            riepilogo.append(
+                f"{prenotazione.start_date} - {prenotazione.end_date}: {prenotazioni_conflittuali} camere occupate su {camere_disponibili}"
+            )
 
         return ", ".join(riepilogo) if riepilogo else "Nessuna prenotazione"
 
@@ -26,9 +39,10 @@ class CameraAdmin(admin.ModelAdmin):
         Modifica la query per aggiungere eventuali annotazioni o filtraggio necessario.
         """
         qs = super().get_queryset(request)
-        return qs
+        return qs.annotate(num_prenotazioni=Count('roombooking')).order_by('-num_prenotazioni')
 
 admin.site.register(Camera, CameraAdmin)
+
 
 @admin.register(RoomBooking)
 class RoomBookingAdmin(admin.ModelAdmin):
@@ -47,6 +61,8 @@ class RecensioneAdmin(admin.ModelAdmin):
     list_display = ('user', 'voto', 'created_at')
     list_filter = ('voto', 'created_at')
     search_fields = ('user__username', 'commento')
+    ordering = ['-created_at']  # Ordina per data decrescente come predefinito
+    sortable_by = ('voto', 'created_at')  # Permette l'ordinamento per voto o data
 
 @admin.register(Tavolo)
 class TavoloAdmin(admin.ModelAdmin):
