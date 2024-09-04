@@ -3,6 +3,8 @@ from .models import RoomBooking, TavoloBooking, Recensione
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from datetime import time
+from datetime import date
+
 
 class RoomSearchForm(forms.Form):
 
@@ -81,6 +83,11 @@ class RecensioneForm(forms.ModelForm):
         widgets = {
             'data': forms.DateInput(attrs={'type': 'date'}),
         }
+    def clean_data(self):
+        data = self.cleaned_data.get('data')
+        if data > date.today():
+            raise forms.ValidationError("Non puoi inserire una data futura per la recensione.")
+        return data
 
 
 class CustomUserCreationForm(UserCreationForm):

@@ -37,10 +37,9 @@ def menu(request):
 
 
 def recensione(request):
-    # Prendi il parametro di ordinamento dalla richiesta GET, di default ordina per data
+   
     ordine = request.GET.get('ordine', 'data')
-    
-    # Filtra le recensioni per categoria e ordina secondo il parametro scelto
+ 
     recensioni_ristorante = Recensione.objects.filter(categoria='ristorante').order_by(ordine)
     recensioni_albergo = Recensione.objects.filter(categoria='albergo').order_by(ordine)
     
@@ -49,7 +48,7 @@ def recensione(request):
             'ristorante': recensioni_ristorante,
             'albergo': recensioni_albergo,
         },
-        'ordine_corrente': ordine,  # Aggiungi il parametro di ordinamento corrente al contesto
+        'ordine_corrente': ordine,  
     }
     
     return render(request, 'core/recensioni.html', context)
@@ -66,7 +65,7 @@ def aggiungi_recensione(request):
             recensione.save()
             return JsonResponse({'success': True, 'message': 'Recensione caricata con successo!'}, status=200)
         else:
-            return JsonResponse({'success': False, 'message': 'Errore nel caricamento della recensione. Controlla i dati inseriti.'}, status=400)
+            return JsonResponse({'success': False, 'message': 'Errore nel caricamento della recensione. Controlla che i dati inseriti siano corretti e la data non sia nel futuro.'}, status=400)
     else:
         form = RecensioneForm()
     return render(request, 'core/aggiungi_recensione.html', {'form': form})

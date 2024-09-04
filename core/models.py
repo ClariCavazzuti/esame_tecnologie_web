@@ -2,13 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-class Core(models.Model):
-    campo1 = models.CharField(max_length=100)
-    campo2 = models.TextField()
-
-    def __str__(self):
-        return self.campo1
-
 
 class Camera(models.Model):
     SMALL = 'small'
@@ -146,8 +139,7 @@ class Recensione(models.Model):
         return f"Recensione di {self.user.username}"
 
         
-    def save(self, *args, **kwargs):
-       self.clean()  
+    def save(self, *args, **kwargs): 
        super().save(*args, **kwargs)
     
     class Meta:
