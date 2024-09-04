@@ -40,10 +40,7 @@ Per eseguire questo progetto, assicurati di avere i seguenti requisiti:
 
 3. **Installa le dipendenze**:
    ```bash
-   pip install pipenv
-   pip install django-crispy-forms
-   pip install crispy-bootstrap4
-   ```
+   pip install -r requirements.txt
 
 4. **Applica le migrazioni**:
    ```bash
