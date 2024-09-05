@@ -9,12 +9,7 @@ from django.contrib import messages
 
 
 def check_availability(camera, start_date, end_date):
-    bookings = RoomBooking.objects.filter(
-        camera=camera,
-        start_date__lt=end_date,
-        end_date__gt=start_date
-    )
-    return bookings.count() < camera.camere_totali
+   return camera.get_bookings_count(start_date, end_date) < camera.camere_totali
 
 
 

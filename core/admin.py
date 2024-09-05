@@ -13,24 +13,29 @@ class CameraAdmin(admin.ModelAdmin):
         Mostra un riepilogo delle camere prenotate, indicando quante camere sono prenotate in un dato periodo,
         tenendo conto delle sovrapposizioni.
         """
+        # Recuperiamo tutte le prenotazioni della camera corrente e ordiniamo per data di inizio
         prenotazioni = RoomBooking.objects.filter(camera=obj).order_by('start_date')
+
+        # Pre-carichiamo tutte le prenotazioni sovrapposte per ridurre le query
+        prenotazioni_conflittuali = RoomBooking.objects.filter(camera=obj).values('start_date', 'end_date')
+
         riepilogo = []
-        camere_disponibili = obj.camere_totali
+        camere_totali = obj.camere_totali
 
         for prenotazione in prenotazioni:
-            prenotazioni_conflittuali = RoomBooking.objects.filter(
-                camera=obj,
-                start_date__lt=prenotazione.end_date,
-                end_date__gt=prenotazione.start_date
-            ).count()
-
+            # Calcoliamo le prenotazioni sovrapposte direttamente nel loop
+            prenotazioni_in_conflitto = sum(
+                1 for p in prenotazioni_conflittuali
+                if p['start_date'] < prenotazione.end_date and p['end_date'] > prenotazione.start_date
+            )
+            
             riepilogo.append(
-                f"{prenotazione.start_date} - {prenotazione.end_date}: {prenotazioni_conflittuali} camere occupate su {camere_disponibili}"
+                f"{prenotazione.start_date} - {prenotazione.end_date}: {prenotazioni_in_conflitto} camere occupate su {camere_totali}"
             )
 
         return ", ".join(riepilogo) if riepilogo else "Nessuna prenotazione"
 
-    riepilogo_prenotazioni.short_description = 'Riepilogo prenotazioni'
+    riepilogo_prenotazioni.short_description = 'Riepilogo prenotazioni'  # Questo definisce la descrizione che appare nell'admin
 
     def get_queryset(self, request):
         """

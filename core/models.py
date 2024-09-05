@@ -28,16 +28,15 @@ class Camera(models.Model):
     def __str__(self):
         return f"{self.get_tipo_display()} - {self.numero_posti_letto} posti letto - {self.prezzo_per_notte}€/notte"
     
+    def get_bookings_count(self, start_date, end_date):
+         return RoomBooking.objects.filter(
+                camera=self,
+                start_date__lt=end_date,
+                end_date__gt=start_date
+            ).count()
+    
     def decrementa_camere_disponibili(self, start_date, end_date):
-        bookings_in_range = RoomBooking.objects.filter(
-            camera=self,
-            start_date__lt=end_date,
-            end_date__gt=start_date
-        ).count()
-        
-        if bookings_in_range < self.camere_totali:
-            return True
-        return False
+        return self.get_bookings_count(start_date, end_date) < self.camere_totali
     
     class Meta:
         verbose_name = "Camera"

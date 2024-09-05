@@ -99,7 +99,7 @@ class HomePageContentTestCase(TestCase):
     def test_home_page_contains_expected_content(self):
         """Testa che la home page contenga il contenuto atteso."""
         response = self.client.get(reverse('core_home'))
-        self.assertContains(response, 'Benvenuti al Ristorante e Albergo Kristall')
+        self.assertContains(response, 'Benvenuti al Ristorante Albergo Kristall')
         self.assertContains(response, 'Contattaci')
 
 
